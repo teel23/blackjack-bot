@@ -141,14 +141,15 @@ export function showHint() {
 
 function snapshot(d: SaveData) {
   if (!d.settings.coach || !d.table.round) return null;
-  return {
+  // Deep copy: settlement mutates the live session/bankroll objects right after this.
+  return structuredClone({
     round: d.table.round,
     shoe: d.table.shoe,
     bankroll: d.bankroll,
     session: d.sessions.active,
     quickStack: d.table.quickStack,
     handsPlayed: d.stats.handsPlayed,
-  };
+  });
 }
 
 function countDecision(d: SaveData, ok: boolean, hinted: boolean) {

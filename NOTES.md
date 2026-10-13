@@ -1,7 +1,7 @@
 # Blackjack Bot — Project Notes
 > iPhone-first blackjack trainer: daily lessons, drills, strategy chart, and a play-money practice table.
 > Reference for jumping back into this project.
-> Last updated: October 12, 2026 (Phase 2 — practice table)
+> Last updated: October 12, 2026 (Phase 3 — bankroll + sessions)
 
 ---
 
@@ -23,6 +23,16 @@ Next.js 16 · TypeScript · Tailwind 4 · zustand · localStorage · Vitest · P
 ---
 
 ## Build log (newest first)
+
+### 2026-10-12 — Phase 3: bankroll + sessions
+- `/sessions/`: bankroll hero, stat tiles, bankroll-over-time SVG chart (gold line, tap/drag to
+  inspect, reset markers, table view toggle), open-session card, history list (date, hands, active
+  time, buy-in, net with ▲/▼ + sign, accuracy, hints, best/worst hand), confirmed + logged reset.
+- Lobby shows "Bankroll empty" with reset when broke; quick play refill.
+- Fixed: take-back snapshot shared the live session object, so undo didn't restore the stack
+  (caught by the new unit test). Fixed chart ticks so the line never exceeds the plot.
+- Unit tests 136 (sessions, storage repair/migrate/backup, streak + DST-safe dates). E2E adds
+  session buy-in → cash-out → history, and reset.
 
 ### 2026-10-12 — Phase 2: practice table + coach mode
 - Versioned save layer (`lib/storage`): one `bjbot:data` key, sanitize/repair on load, corrupt data
@@ -59,7 +69,6 @@ sit on known marginal cells, where the published chart is kept.
 ---
 
 ## Open Items
-- [ ] Phase 3: bankroll + sessions + history
 - [ ] Phase 4: lessons 1–10 + daily unlock + streaks
 - [ ] Phase 5: drills, strategy chart, stats, review mistakes
 - [ ] Phase 6: lessons 11–30, counting drill, PWA polish, accessibility pass
