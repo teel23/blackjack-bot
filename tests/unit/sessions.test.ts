@@ -3,7 +3,10 @@ import { c } from '@/lib/engine/cards';
 import { stackDeal } from '@/lib/engine/shoe';
 import { cashOut, isBroke, resetBankroll, startQuickPlay, startSession } from '@/lib/state/sessions';
 import { getData, replaceData, update } from '@/lib/state/store';
-import { deal, playAction, setBet, takeBack } from '@/lib/state/table';
+import { deal as rawDeal, playAction as rawPlay, resetTapGuard, setBet, takeBack } from '@/lib/state/table';
+
+const deal = () => (resetTapGuard(), rawDeal());
+const playAction = (a: Parameters<typeof rawPlay>[0]) => (resetTapGuard(), rawPlay(a));
 import { defaultData } from '@/lib/storage/schema';
 
 function stack(p: [number, number], up: number, hole: number, draws: number[] = []) {
@@ -74,6 +77,17 @@ describe('sessions', () => {
     expect(d.table.quickStack).toBe(1025);
     expect(d.bankroll.balance).toBe(1000);
     expect(d.sessions.past).toHaveLength(0);
+  });
+
+  it('ignores a double-tap that lands two actions within a few ms', () => {
+    startQuickPlay();
+    stack([5, 4], 10, 7, [2, 2, 2]);
+    setBet(25);
+    deal();
+    resetTapGuard();
+    rawPlay('hit');
+    rawPlay('hit');
+    expect(getData().table.round?.hands[0].cards).toHaveLength(3);
   });
 
   it('reset is logged and restores $1,000', () => {

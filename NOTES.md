@@ -1,7 +1,7 @@
 # Blackjack Bot — Project Notes
 > iPhone-first blackjack trainer: daily lessons, drills, strategy chart, and a play-money practice table.
 > Reference for jumping back into this project.
-> Last updated: October 12, 2026 (Phase 6 — content, counting, PWA, a11y)
+> Last updated: October 12, 2026 (Phase 7 — iPhone hardening)
 
 ---
 
@@ -22,7 +22,41 @@ Next.js 16 · TypeScript · Tailwind 4 · zustand · localStorage · Vitest · P
 
 ---
 
+## Manual iPhone checklist
+Run once in **Safari**, then again after **Add to Home Screen** (installed app). ~10 minutes.
+
+**Safari**
+- [ ] Open blackjack.c2tbuilds.com — Today screen loads, no zoomed-in or sideways-scrolling page.
+- [ ] Notch/Dynamic Island: headers sit below it; tab bar sits above the home indicator.
+- [ ] Rotate to landscape on the table — dealer and player side by side, nothing cut off. Rotate back.
+- [ ] Play → Quick play → Deal. Double-tap Hit fast: only one card comes. Buttons never jump around.
+- [ ] Split a pair (keep dealing until you get one) — hands fit, no sideways scroll.
+- [ ] Mid-hand, swipe Safari away (kill it). Reopen the URL — same cards, same bankroll.
+- [ ] Pull down on the table — the page doesn't refresh.
+- [ ] Settings → Export backup → "Save to Files" works. Import it back → "Backup restored."
+- [ ] Settings → Sound on → play a hand: sounds play (sound only starts after a tap).
+- [ ] iOS Settings → Accessibility → Larger Text, bump it up — lesson text grows, table still fits.
+- [ ] VoiceOver on: swipe through the table — cards read as "Ten of hearts", buttons have names.
+
+**Installed (Share → Add to Home Screen)**
+- [ ] Icon looks right on the Home Screen; launch shows the dark splash, then the app full-screen.
+- [ ] Status bar text is readable over the dark header.
+- [ ] Airplane Mode on → open the app → every tab works (Today, Learn, a lesson, Play, Chart, Stats).
+- [ ] Start the daily drill, answer a few, swipe the app away, reopen — it resumes on the same hand.
+- [ ] Settings → Backup shows "Your browser has agreed to keep this app's data" (installed apps get this).
+- [ ] After a later deploy: reopen → "A new version is ready" appears (never mid-hand) → Update reloads.
+
 ## Build log (newest first)
+
+### 2026-10-13 — Phase 7: iPhone hardening
+- New e2e hardening suite (all 3 iPhones): true relaunch from saved storage mid-hand, daily drill
+  resumes with identical cards, reload during the dealer reveal (no replay, no double pay), corrupt JSON
+  (fresh start + `bjbot:corrupt:*` copy + notice), broken hand dropped while bankroll survives,
+  simulated notch/home-indicator insets, double-tap guard, overscroll/touch-action, storage.persist().
+- Double-tap guard: a repeated identical action within 280ms of the *input event's* timestamp is
+  ignored (two quick Hit taps = one hit).
+- Added `apple-mobile-web-app-capable` (Next only emits the non-prefixed tag).
+- Full suite: 177 unit + 77 e2e (×3 iPhones where applicable), run twice — 154/154 green.
 
 ### 2026-10-13 — Phase 6: lessons 11–30, counting drill, PWA polish, accessibility
 - All 30 lessons written (units 1–10, original text). Every decision answer printed and checked against
@@ -113,7 +147,6 @@ sit on known marginal cells, where the published chart is kept.
 ---
 
 ## Open Items
-- [ ] Phase 7: iPhone hardening (WebKit e2e, kill-and-resume, storage, safe areas, manual checklist)
 - [ ] Phase 8: Netlify deploy + blackjack.c2tbuilds.com + portfolio card
 - [ ] Ask Carson: games.c2tbuilds.com tile (teel23/mini-games) — not approved yet
 - [ ] Ask Carson: AI Dashboard entry (add `'BlackJack Bot': 'blackjack-bot'` to ai-dashboard sync-notes folder map, run sync, journal note) — not approved yet

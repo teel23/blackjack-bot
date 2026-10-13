@@ -28,7 +28,8 @@ export const metadata: Metadata = {
     icon: [{ url: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' }],
     apple: [{ url: '/icons/apple-touch-icon.png', sizes: '180x180' }],
   },
-  other: { 'mobile-web-app-capable': 'yes' },
+  // Next emits mobile-web-app-capable; older iOS versions still look for the apple- prefixed tag.
+  other: { 'apple-mobile-web-app-capable': 'yes' },
 };
 
 export const viewport: Viewport = {

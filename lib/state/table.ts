@@ -90,7 +90,28 @@ function applySettlement(d: SaveData, round: Round) {
   }
 }
 
-export function deal() {
+/**
+ * iPhone double-taps can land two actions in a few milliseconds (two hits instead of one).
+ * Ignore a second game action that arrives within this window.
+ */
+const TAP_GUARD_MS = 280;
+let lastActionAt = -Infinity;
+let lastActionKey = '';
+/** `at` is the input event's timeStamp when known — when the tap happened, not when we got to it. */
+function tapGuard(key: string, at?: number): boolean {
+  const now = at ?? (typeof performance !== 'undefined' ? performance.now() : Date.now());
+  if (key === lastActionKey && now - lastActionAt < TAP_GUARD_MS) return false;
+  lastActionAt = now;
+  lastActionKey = key;
+  return true;
+}
+/** Tests drive actions faster than a thumb can. */
+export function resetTapGuard() {
+  lastActionAt = -Infinity;
+}
+
+export function deal(at?: number) {
+  if (!tapGuard('deal', at)) return;
   update((d) => {
     if (!canDeal(d).ok) return;
     const now = Date.now();
@@ -159,7 +180,8 @@ function countDecision(d: SaveData, ok: boolean, hinted: boolean) {
   }
 }
 
-export function playAction(action: Action) {
+export function playAction(action: Action, at?: number) {
+  if (!tapGuard(action, at)) return;
   update((d) => {
     const round = d.table.round;
     if (!round || round.phase !== 'player') return;
@@ -206,7 +228,8 @@ export function playAction(action: Action) {
   });
 }
 
-export function chooseInsurance(take: boolean) {
+export function chooseInsurance(take: boolean, at?: number) {
+  if (!tapGuard('insurance', at)) return;
   update((d) => {
     const round = d.table.round;
     if (!round || round.phase !== 'insurance') return;

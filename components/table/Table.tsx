@@ -308,9 +308,9 @@ function BetCircle({ bet, height }: { bet: number; height: number }) {
 function ActionButton({ action, enabled, hinted, small }: { action: Action; enabled: boolean; hinted: boolean; small?: boolean }) {
   return (
     <button
-      onClick={() => {
+      onClick={(e) => {
         sfx('deal');
-        playAction(action);
+        playAction(action, e.timeStamp);
       }}
       disabled={!enabled}
       aria-label={`${ACTION_LABEL[action]}${hinted ? ' (suggested)' : ''}`}
@@ -337,13 +337,13 @@ function InsuranceBar({ round, compact }: { round: Round; compact?: boolean }) {
       )}
       <div className="grid grid-cols-2 gap-2">
         <button
-          onClick={() => chooseInsurance(false)}
+          onClick={(e) => chooseInsurance(false, e.timeStamp)}
           className={`rounded-2xl bg-white text-lg font-bold text-black active:scale-[0.97] ${compact ? 'h-11' : 'h-[60px]'}`}
         >
           {evenMoney ? 'Keep blackjack' : 'No insurance'}
         </button>
         <button
-          onClick={() => chooseInsurance(true)}
+          onClick={(e) => chooseInsurance(true, e.timeStamp)}
           disabled={!affordable}
           className={`rounded-2xl bg-black/40 text-lg font-bold text-white ring-1 ring-white/30 active:scale-[0.97] disabled:opacity-30 ${compact ? 'h-11' : 'h-[60px]'}`}
         >
@@ -391,9 +391,9 @@ function BetBar({ bet, available, canDealNow, why, compact }: { bet: number; ava
         </button>
       </div>
       <button
-        onClick={() => {
+        onClick={(e) => {
           sfx('deal');
-          deal();
+          deal(e.timeStamp);
         }}
         disabled={!canDealNow}
         className={`w-full rounded-2xl bg-gold text-lg font-extrabold text-black shadow-md active:scale-[0.98] disabled:opacity-40 ${compact ? 'h-12' : 'h-[60px]'}`}
