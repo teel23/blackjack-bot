@@ -1,12 +1,13 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { roundInProgress } from '@/lib/state/table';
 import { useApp } from '@/lib/state/store';
 
 /** Registers the service worker and offers updates without ever reloading mid-hand. */
 export default function ServiceWorker() {
   const [waiting, setWaiting] = useState<ServiceWorker | null>(null);
+  const updateRequested = useRef(false);
   const busy = useApp((s) => roundInProgress(s.data) || !!s.data.progress.activeDrill);
 
   useEffect(() => {
@@ -28,10 +29,10 @@ export default function ServiceWorker() {
         watch(r);
       })
       .catch(() => {});
-    let reloading = false;
+    // Reload only when the player asked for the update — never on the first install's clients.claim().
     const onController = () => {
-      if (reloading) return;
-      reloading = true;
+      if (!updateRequested.current) return;
+      updateRequested.current = false;
       window.location.reload();
     };
     navigator.serviceWorker.addEventListener('controllerchange', onController);
@@ -52,7 +53,10 @@ export default function ServiceWorker() {
         <p className="flex-1 text-sm">A new version of Blackjack Bot is ready.</p>
         <button
           className="min-h-11 rounded-xl bg-gold px-4 text-sm font-bold text-black"
-          onClick={() => waiting.postMessage({ type: 'SKIP_WAITING' })}
+          onClick={() => {
+            updateRequested.current = true;
+            waiting.postMessage({ type: 'SKIP_WAITING' });
+          }}
         >
           Update
         </button>

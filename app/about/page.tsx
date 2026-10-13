@@ -11,7 +11,7 @@ export default function AboutPage() {
         <p className="mt-2 text-white/85">{RESPONSIBLE_LINE}</p>
       </section>
 
-      <section className="mt-6 flex flex-col gap-3 text-[15px] leading-relaxed text-muted">
+      <section className="mt-6 flex flex-col gap-3 text-[0.9375rem] leading-relaxed text-muted">
         <h2 className="text-lg font-bold text-ink">What this is</h2>
         <p>
           A trainer for blackjack basic strategy: short daily lessons, drills, an interactive strategy chart and a practice table with a

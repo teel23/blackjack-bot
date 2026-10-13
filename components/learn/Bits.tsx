@@ -51,13 +51,13 @@ export function Visual({ v, width = 56 }: { v: CardsVisual; width?: number }) {
     <div className="felt flex flex-col items-center gap-3 rounded-3xl p-4">
       {dealer && (
         <div className="flex flex-col items-center gap-1">
-          <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/60">Dealer</span>
+          <span className="text-[0.6875rem] font-semibold uppercase tracking-[0.18em] text-white/60">Dealer</span>
           <CardRow cards={dealer} hiddenIndex={v.hole ? 1 : undefined} width={width} label={`Dealer shows ${cardSpoken(dealer[0])}`} />
         </div>
       )}
       {player && (
         <div className="flex flex-col items-center gap-1">
-          {dealer && <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/60">You</span>}
+          {dealer && <span className="text-[0.6875rem] font-semibold uppercase tracking-[0.18em] text-white/60">You</span>}
           <CardRow cards={player} width={width} label={`Your cards: ${player.map(cardSpoken).join(', ')}`} />
         </div>
       )}
@@ -72,12 +72,12 @@ export function DecisionTable({ cards, up, width = 64, caption }: { cards: Card[
   return (
     <div className="felt flex flex-col items-center gap-4 rounded-3xl px-4 py-5">
       <div className="flex flex-col items-center gap-1">
-        <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/60">Dealer</span>
+        <span className="text-[0.6875rem] font-semibold uppercase tracking-[0.18em] text-white/60">Dealer</span>
         <CardRow cards={[up, hole]} hiddenIndex={1} width={width} label={`Dealer shows ${cardSpoken(up)}`} />
       </div>
       {caption}
       <div className="flex flex-col items-center gap-1">
-        <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/60">You</span>
+        <span className="text-[0.6875rem] font-semibold uppercase tracking-[0.18em] text-white/60">You</span>
         <CardRow cards={cards} width={width} label={`Your cards: ${cards.map(cardSpoken).join(', ')}`} />
       </div>
     </div>
@@ -115,7 +115,7 @@ export function ActionPad({
         onClick={() => onPick(a)}
         aria-label={`${ACTION_LABEL[a]}${isCorrect ? ' (correct play)' : ''}${isWrong ? ' (your answer)' : ''}`}
         className={`rounded-2xl font-bold text-black shadow-md transition-transform active:scale-[0.97] disabled:opacity-30 disabled:saturate-0 ${
-          small ? 'h-12 text-[15px]' : 'h-[60px] text-lg'
+          small ? 'h-12 text-[0.9375rem]' : 'h-[60px] text-lg'
         } ${isCorrect ? 'opacity-100! saturate-100! ring-4 ring-good ring-offset-2 ring-offset-bg' : ''} ${isWrong ? 'opacity-100! saturate-100! ring-4 ring-bad ring-offset-2 ring-offset-bg' : ''}`}
         style={{ background: ACTION_BG[a] }}
       >

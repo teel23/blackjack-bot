@@ -121,7 +121,7 @@ export default function DrillPlayer() {
                 ? `${ACTION_LABEL[g.rec.action]} — correct`
                 : `${situationLabel(sit)}: ${ACTION_LABEL[g.rec.action]}${chosen === 'timeout' ? ' (time ran out)' : ''}`}
             </p>
-            {!last.ok && <p className="mt-1 text-[15px] text-muted">{g.reason}</p>}
+            {!last.ok && <p className="mt-1 text-[0.9375rem] text-muted">{g.reason}</p>}
           </div>
         )}
         <BottomBar>
@@ -174,7 +174,7 @@ function DrillDone({ s, onReview }: { s: DrillSummary; onReview: () => void }) {
           {pct}% correct · {avg}s per decision
         </p>
         {s.kind === 'daily' && (
-          <p className="mt-4 rounded-2xl bg-surface px-4 py-3 text-[15px]">
+          <p className="mt-4 rounded-2xl bg-surface px-4 py-3 text-[0.9375rem]">
             Daily goal done — streak: <strong>{s.streak} day{s.streak === 1 ? '' : 's'}</strong>
             {s.earnedFreeze ? ' · Perfect drill earned a streak freeze ❄️' : ''}
           </p>

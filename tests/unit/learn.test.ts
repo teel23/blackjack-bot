@@ -75,3 +75,20 @@ describe('drill picking', () => {
     for (const k of ['H16v9', 'H16v10', 'H16v11', 'H15v10']) expect(s).toContain(k);
   });
 });
+
+import { hiLo } from '@/lib/count';
+import { freshDecks } from '@/lib/engine/shoe';
+
+describe('Hi-Lo', () => {
+  it('a full deck counts to zero', () => {
+    expect(freshDecks(1).reduce((s, c) => s + hiLo(c), 0)).toBe(0);
+  });
+  it('tags cards', () => {
+    expect(hiLo({ rank: '2', suit: 'S' })).toBe(1);
+    expect(hiLo({ rank: '6', suit: 'S' })).toBe(1);
+    expect(hiLo({ rank: '7', suit: 'S' })).toBe(0);
+    expect(hiLo({ rank: '9', suit: 'S' })).toBe(0);
+    expect(hiLo({ rank: 'K', suit: 'S' })).toBe(-1);
+    expect(hiLo({ rank: 'A', suit: 'S' })).toBe(-1);
+  });
+});

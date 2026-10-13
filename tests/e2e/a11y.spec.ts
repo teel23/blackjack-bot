@@ -1,0 +1,35 @@
+import AxeBuilder from '@axe-core/playwright';
+import { expect, test } from '@playwright/test';
+import { defaultData } from '../../lib/storage/schema';
+import { stackedSave, withSave } from './helpers';
+
+const PAGES = ['/', '/learn/', '/drills/', '/play/', '/chart/', '/stats/', '/sessions/', '/settings/', '/about/', '/lesson/u1-values/', '/count/'];
+
+test('no serious accessibility violations on main screens', async ({ page }, info) => {
+  test.skip(info.project.name !== 'iPhone 15', 'one device is enough for the audit');
+  test.setTimeout(120_000);
+  const d = defaultData();
+  d.settings.installTipDismissed = false;
+  await withSave(page, d);
+  const problems: string[] = [];
+  for (const path of PAGES) {
+    await page.goto(path);
+    await page.waitForTimeout(300);
+    const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
+    for (const v of r.violations.filter((x) => x.impact === 'serious' || x.impact === 'critical')) {
+      problems.push(`${path} [${v.impact}] ${v.id}: ${v.help} — ${v.nodes.slice(0, 3).map((n) => n.target.join(' ')).join(' | ')}`);
+    }
+  }
+  expect(problems, problems.join('\n')).toEqual([]);
+});
+
+test('table in play has no serious violations', async ({ page }, info) => {
+  test.skip(info.project.name !== 'iPhone 15', 'one device is enough for the audit');
+  await withSave(page, stackedSave([10, 6], 'K', 7, [9]));
+  await page.goto('/play/');
+  await page.getByRole('button', { name: /^Deal/ }).click();
+  await page.waitForTimeout(500);
+  const r = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+  const bad = r.violations.filter((x) => x.impact === 'serious' || x.impact === 'critical').map((v) => `${v.id}: ${v.nodes.slice(0, 3).map((n) => n.target.join(' ')).join(' | ')}`);
+  expect(bad, bad.join('\n')).toEqual([]);
+});

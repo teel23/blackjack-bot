@@ -53,10 +53,11 @@ function dealerTotalText(round: Round, shownDealer: number, hidden: boolean): st
 }
 
 /** Card width from the viewport: big enough to read, small enough to fit 4 split hands at 375px. */
-function useLayout(handCount: number) {
+function useLayout(handCount: number, compact: boolean) {
   const { w, h } = useViewport();
   const base = Math.max(48, Math.min(0.16 * w, 0.105 * h, 86));
-  const avail = Math.min(w, 512) - 32;
+  // Landscape (compact): dealer and player sit side by side, each gets half the width.
+  const avail = compact ? Math.min(w, 960) / 2 - 24 : Math.min(w, 512) - 32;
   const slot = avail / handCount;
   const cardWidth = Math.floor(Math.min(base, (slot - 8) / 1.84));
   const stepFor = (count: number, width = cardWidth, slotW = slot) =>
@@ -124,7 +125,9 @@ export default function Table() {
   }, [round, done, revealing]);
 
   const handCount = round?.hands.length ?? 1;
-  const layout = useLayout(handCount);
+  const { h: viewH } = useViewport();
+  const compact = viewH < 520;
+  const layout = useLayout(handCount, compact);
 
   const animFor = (id: string, faceDown: boolean, flip = false): 'deal' | 'flip' | null => {
     const key = `${id}:${faceDown ? 'down' : 'up'}`;
@@ -151,7 +154,7 @@ export default function Table() {
     >
       {/* Top bar */}
       <div className="pt-safe">
-        <div className="mx-auto flex h-14 max-w-lg items-center gap-1 px-safe">
+        <div className={`mx-auto flex items-center gap-1 px-safe ${compact ? 'h-11 max-w-4xl' : 'h-14 max-w-lg'}`}>
           <Link href="/" aria-label="Home" className="-ml-2 grid min-h-11 min-w-11 place-items-center rounded-full text-white/80">
             <IconBack />
           </Link>
@@ -183,7 +186,9 @@ export default function Table() {
 
       {/* Felt */}
       <div
-        className="relative mx-auto flex w-full max-w-lg min-h-0 flex-1 flex-col justify-around px-safe"
+        className={`relative mx-auto flex w-full min-h-0 flex-1 px-safe ${
+          compact ? 'max-w-4xl flex-row flex-wrap content-around items-center justify-around' : 'max-w-lg flex-col justify-around'
+        }`}
         onClick={skipReveal}
       >
         {/* Dealer */}
@@ -208,7 +213,7 @@ export default function Table() {
         </section>
 
         {/* Coach / status banner — fixed height so nothing jumps */}
-        <CoachBanner revealing={revealing} />
+        <CoachBanner revealing={revealing} compact={compact} />
 
         {/* Player */}
         <section aria-label="Your hands" className="flex items-end justify-center">
@@ -244,9 +249,18 @@ export default function Table() {
 
       {/* Bottom action bar: same height in every phase */}
       <div className="border-t border-black/30 bg-black/35 backdrop-blur-sm pb-safe">
-        <div className="mx-auto flex max-w-lg flex-col gap-2 px-safe py-2.5" style={{ minHeight: 132 }}>
+        <div
+          className={`mx-auto flex flex-col gap-2 px-safe ${compact ? 'max-w-4xl py-2' : 'max-w-lg py-2.5'}`}
+          style={{ minHeight: compact ? 60 : 132 }}
+        >
           {round && round.phase === 'insurance' ? (
-            <InsuranceBar round={round} />
+            <InsuranceBar round={round} compact={compact} />
+          ) : round && round.phase === 'player' && legal && compact ? (
+            <div className="grid grid-cols-5 gap-2">
+              {(['hit', 'stand', 'double', 'split', 'surrender'] as Action[]).map((a) => (
+                <ActionButton key={a} action={a} enabled={legal[a]} hinted={hintFor === a} small />
+              ))}
+            </div>
           ) : round && round.phase === 'player' && legal ? (
             <>
               <div className="grid grid-cols-3 gap-2">
@@ -263,14 +277,14 @@ export default function Table() {
           ) : revealing ? (
             <button
               onClick={skipReveal}
-              className="flex h-[112px] w-full items-center justify-center rounded-2xl bg-black/30 text-base font-semibold text-white/80"
+              className={`flex w-full items-center justify-center rounded-2xl bg-black/30 text-base font-semibold text-white/80 ${compact ? 'h-11' : 'h-[112px]'}`}
             >
               Dealer&apos;s turn… <span className="ml-2 text-sm text-white/50">(tap to skip)</span>
             </button>
           ) : broke ? (
-            <BrokeBar quick={table.mode === 'quick'} />
+            <BrokeBar quick={table.mode === 'quick'} compact={compact} />
           ) : (
-            <BetBar bet={table.bet} available={available} canDealNow={deck.ok} why={deck.why} />
+            <BetBar bet={table.bet} available={available} canDealNow={deck.ok} why={deck.why} compact={compact} />
           )}
         </div>
       </div>
@@ -310,26 +324,28 @@ function ActionButton({ action, enabled, hinted, small }: { action: Action; enab
   );
 }
 
-function InsuranceBar({ round }: { round: Round }) {
+function InsuranceBar({ round, compact }: { round: Round; compact?: boolean }) {
   const evenMoney = describeHand(round.hands[0].cards) === 'Blackjack';
   const cost = insuranceCost(round);
   const affordable = canAffordInsurance(round);
   return (
     <>
-      <p className="flex h-12 items-center justify-center text-center text-[15px] font-semibold text-white">
-        {evenMoney ? 'Dealer shows an ace. Take even money?' : `Dealer shows an ace. Insurance costs ${money(cost)}.`}
-      </p>
+      {!compact && (
+        <p className="flex h-12 items-center justify-center text-center text-[15px] font-semibold text-white">
+          {evenMoney ? 'Dealer shows an ace. Take even money?' : `Dealer shows an ace. Insurance costs ${money(cost)}.`}
+        </p>
+      )}
       <div className="grid grid-cols-2 gap-2">
         <button
           onClick={() => chooseInsurance(false)}
-          className="h-[60px] rounded-2xl bg-white text-lg font-bold text-black active:scale-[0.97]"
+          className={`rounded-2xl bg-white text-lg font-bold text-black active:scale-[0.97] ${compact ? 'h-11' : 'h-[60px]'}`}
         >
           {evenMoney ? 'Keep blackjack' : 'No insurance'}
         </button>
         <button
           onClick={() => chooseInsurance(true)}
           disabled={!affordable}
-          className="h-[60px] rounded-2xl bg-black/40 text-lg font-bold text-white ring-1 ring-white/30 active:scale-[0.97] disabled:opacity-30"
+          className={`rounded-2xl bg-black/40 text-lg font-bold text-white ring-1 ring-white/30 active:scale-[0.97] disabled:opacity-30 ${compact ? 'h-11' : 'h-[60px]'}`}
         >
           {evenMoney ? 'Even money' : `Insure ${money(cost)}`}
         </button>
@@ -338,11 +354,11 @@ function InsuranceBar({ round }: { round: Round }) {
   );
 }
 
-function BetBar({ bet, available, canDealNow, why }: { bet: number; available: number; canDealNow: boolean; why?: string }) {
+function BetBar({ bet, available, canDealNow, why, compact }: { bet: number; available: number; canDealNow: boolean; why?: string; compact?: boolean }) {
   const settings = useApp((s) => s.data.settings);
   return (
-    <>
-      <div className="flex h-12 items-center justify-between gap-2" role="group" aria-label="Chips">
+    <div className={compact ? 'flex items-center gap-3' : 'contents'}>
+      <div className={`flex h-12 items-center justify-between gap-2 ${compact ? 'shrink-0' : ''}`} role="group" aria-label="Chips">
         {CHIPS.map((v) => {
           const [bg, fg] = CHIP_COLORS[v];
           const disabled = bet + v > Math.min(available, settings.tableMax);
@@ -380,17 +396,17 @@ function BetBar({ bet, available, canDealNow, why }: { bet: number; available: n
           deal();
         }}
         disabled={!canDealNow}
-        className="h-[60px] w-full rounded-2xl bg-gold text-lg font-extrabold text-black shadow-md active:scale-[0.98] disabled:opacity-40"
+        className={`w-full rounded-2xl bg-gold text-lg font-extrabold text-black shadow-md active:scale-[0.98] disabled:opacity-40 ${compact ? 'h-12' : 'h-[60px]'}`}
       >
         {canDealNow || !why ? `Deal ${bet ? money(bet) : ''}` : why}
       </button>
-    </>
+    </div>
   );
 }
 
-function BrokeBar({ quick }: { quick: boolean }) {
+function BrokeBar({ quick, compact }: { quick: boolean; compact?: boolean }) {
   return (
-    <>
+    <div className={compact ? 'flex items-center gap-3' : 'contents'}>
       <p className="flex h-12 items-center justify-center text-center text-[15px] font-semibold text-white">
         You&apos;re out of chips at this table. It happens — that&apos;s variance.
       </p>
@@ -403,11 +419,11 @@ function BrokeBar({ quick }: { quick: boolean }) {
           End session
         </button>
       )}
-    </>
+    </div>
   );
 }
 
-function CoachBanner({ revealing }: { revealing: boolean }) {
+function CoachBanner({ revealing, compact }: { revealing: boolean; compact?: boolean }) {
   const data = useApp((s) => s.data);
   const { table, settings } = data;
   const round = table.round;
@@ -475,7 +491,9 @@ function CoachBanner({ revealing }: { revealing: boolean }) {
   return (
     <div
       aria-live="polite"
-      className="mx-auto flex h-[92px] w-full items-center overflow-hidden rounded-2xl bg-black/25 px-3 text-[14px] leading-[1.3]"
+      className={`mx-auto flex w-full items-center overflow-hidden rounded-2xl bg-black/25 px-3 leading-[1.3] ${
+        compact ? 'order-first h-[56px] basis-full text-[13px]' : 'h-[92px] text-[14px]'
+      }`}
     >
       <div className="w-full">{content}</div>
     </div>

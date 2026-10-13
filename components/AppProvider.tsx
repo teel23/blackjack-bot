@@ -5,6 +5,7 @@ import { hydrate, useApp } from '@/lib/state/store';
 import '@/lib/state/progress';
 import NoticeBanner from './NoticeBanner';
 import ServiceWorker from './ServiceWorker';
+import DynamicType from './DynamicType';
 import { useAudioUnlock } from '@/lib/audio';
 
 export default function AppProvider({ children }: { children: React.ReactNode }) {
@@ -25,6 +26,7 @@ export default function AppProvider({ children }: { children: React.ReactNode })
       )}
       <NoticeBanner />
       <ServiceWorker />
+      <DynamicType />
     </>
   );
 }

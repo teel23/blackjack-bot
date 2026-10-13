@@ -112,7 +112,7 @@ export default function SessionsPage() {
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-2xl bg-surface p-3">
-      <dt className="text-[11px] text-muted">{label}</dt>
+      <dt className="text-[0.6875rem] text-muted">{label}</dt>
       <dd className="mt-0.5 text-lg font-semibold tabular-nums">{value}</dd>
     </div>
   );

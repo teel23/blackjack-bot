@@ -64,11 +64,12 @@ export default function TodayPage() {
                   className={`grid h-8 w-8 place-items-center rounded-full text-xs font-bold ${
                     hit ? 'bg-gold text-black' : froze ? 'bg-info/25 text-info' : d === today ? 'border-2 border-dashed border-line' : 'bg-surface-3'
                   }`}
-                  aria-label={`${d}: ${hit ? 'goal done' : froze ? 'streak freeze used' : 'no drill'}`}
+                  role="img"
+                  aria-label={`${new Date(`${d}T12:00:00`).toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}: ${hit ? 'goal done' : froze ? 'streak freeze used' : 'no drill'}`}
                 >
                   {hit ? '✓' : froze ? '❄' : ''}
                 </span>
-                <span className="text-[11px] text-faint">{label}</span>
+                <span className="text-[0.6875rem] text-faint">{label}</span>
               </li>
             );
           })}

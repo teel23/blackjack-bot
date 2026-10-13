@@ -54,7 +54,7 @@ export default function LearnPage() {
                     {state === 'passed' ? <IconCheck size={20} /> : state === 'locked' ? <IconLock size={18} /> : '▶'}
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className={`block font-semibold ${state === 'locked' ? 'text-faint' : ''}`}>{lesson.title}</span>
+                    <span className={`block font-semibold ${state === 'locked' ? 'text-muted' : ''}`}>{lesson.title}</span>
                     <span className="block truncate text-sm text-muted">
                       {state === 'locked'
                         ? path.unlocksTomorrow?.id === lesson.id
@@ -70,7 +70,7 @@ export default function LearnPage() {
               return (
                 <li key={lesson.id}>
                   {state === 'locked' ? (
-                    <div className="rounded-2xl bg-surface p-3 opacity-80" aria-label={`${lesson.title}, locked`}>
+                    <div className="rounded-2xl bg-surface p-3" aria-label={`${lesson.title}, locked`} role="group">
                       {inner}
                     </div>
                   ) : (

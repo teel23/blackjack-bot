@@ -18,7 +18,8 @@ const hash = crypto.createHash('sha256');
 const urls = [];
 for (const f of files.sort()) {
   const rel = '/' + path.relative(out, f).split(path.sep).join('/');
-  if (rel === '/sw.js' || rel.endsWith('.map') || rel === '/_redirects' || rel === '/_headers') continue;
+  // Launch screens are only used at install time — don't make every visitor download them.
+  if (rel === '/sw.js' || rel.endsWith('.map') || rel === '/_redirects' || rel === '/_headers' || rel.startsWith('/splash/')) continue;
   hash.update(rel).update(fs.readFileSync(f));
   // Pages are requested as "/route/" — cache under that URL as well as index.html.
   urls.push(rel.endsWith('/index.html') ? rel.slice(0, -'index.html'.length) : rel);

@@ -1,7 +1,7 @@
 # Blackjack Bot — Project Notes
 > iPhone-first blackjack trainer: daily lessons, drills, strategy chart, and a play-money practice table.
 > Reference for jumping back into this project.
-> Last updated: October 12, 2026 (Phase 5 — drills, chart, stats)
+> Last updated: October 12, 2026 (Phase 6 — content, counting, PWA, a11y)
 
 ---
 
@@ -23,6 +23,21 @@ Next.js 16 · TypeScript · Tailwind 4 · zustand · localStorage · Vitest · P
 ---
 
 ## Build log (newest first)
+
+### 2026-10-13 — Phase 6: lessons 11–30, counting drill, PWA polish, accessibility
+- All 30 lessons written (units 1–10, original text). Every decision answer printed and checked against
+  its explanation (`npx tsx scripts/print-lesson-answers.ts`); content validated in unit tests.
+- `/count/`: Hi-Lo counting drill (10/20/52 cards × slow/medium/fast), pauses when backgrounded, ±1/±5
+  count pad (iOS numeric keyboard has no minus), per-card review with running totals.
+- PWA: iOS launch screens for 10 iPhone sizes (`scripts/make-splash.mjs`, not precached), maskable
+  icon, manifest. **Fixed: the service worker's first install triggered a page reload** — now it only
+  reloads after the player taps Update.
+- Offline verified for real: e2e starts a private server, waits for the precache, kills the server,
+  then loads every route + client navigation from the service worker.
+- Dynamic Type: root font follows iOS text size (`-apple-system-body`, default 17→16px, capped at 20px);
+  content text converted to rem. Landscape: compact table (dealer/player side by side, one-row actions).
+- Accessibility: axe audit (WCAG 2.1 AA) on 11 screens + live table — 0 serious/critical. Fixed day-dot
+  ARIA and locked-lesson contrast; lighter `--faint`.
 
 ### 2026-10-12 — Phase 5: drills library, strategy chart, stats, review mistakes, settings
 - `/drills/`: hard / soft / pairs / surrender / mixed, accuracy or speed (6s per hand), per-category
@@ -98,7 +113,6 @@ sit on known marginal cells, where the published chart is kept.
 ---
 
 ## Open Items
-- [ ] Phase 6: lessons 11–30, counting drill, PWA polish, accessibility pass
 - [ ] Phase 7: iPhone hardening (WebKit e2e, kill-and-resume, storage, safe areas, manual checklist)
 - [ ] Phase 8: Netlify deploy + blackjack.c2tbuilds.com + portfolio card
 - [ ] Ask Carson: games.c2tbuilds.com tile (teel23/mini-games) — not approved yet

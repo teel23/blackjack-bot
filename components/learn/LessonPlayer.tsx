@@ -83,7 +83,7 @@ export default function LessonPlayer({ id }: { id: string }) {
               <Visual v={card.visual} />
             </div>
           )}
-          <RichText text={card.body} className="mt-4 text-[17px] leading-relaxed text-muted" />
+          <RichText text={card.body} className="mt-4 text-[1.0625rem] leading-relaxed text-muted" />
         </article>
         <BottomBar>
           <button onClick={lessonNext} className="h-[56px] w-full rounded-2xl bg-gold text-lg font-bold text-black">
@@ -139,7 +139,7 @@ function Feedback({ ok, title, body }: { ok: boolean; title: string; body: strin
         <span aria-hidden="true">{ok ? '✅ ' : '❌ '}</span>
         {title}
       </p>
-      <p className="mt-1 text-[15px] text-muted">{body}</p>
+      <p className="mt-1 text-[0.9375rem] text-muted">{body}</p>
     </div>
   );
 }
@@ -209,7 +209,7 @@ function ChoiceStep({ q, answered, ok, onContinue }: { q: ChoiceQuestion; answer
               aria-checked={picked === i}
               disabled={answered}
               onClick={() => pick(i)}
-              className={`min-h-[52px] rounded-2xl border px-4 py-2 text-left text-[17px] font-semibold transition-colors ${
+              className={`min-h-[52px] rounded-2xl border px-4 py-2 text-left text-[1.0625rem] font-semibold transition-colors ${
                 isAnswer ? 'border-good bg-good/15' : isWrongPick ? 'border-bad bg-bad/15' : 'border-line bg-surface'
               } ${answered && !isAnswer && !isWrongPick ? 'opacity-50' : ''}`}
             >
