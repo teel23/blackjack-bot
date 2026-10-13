@@ -3,7 +3,12 @@
 import Link from 'next/link';
 import AppScreen from '@/components/AppScreen';
 import { IconCheck, IconLock } from '@/components/Icons';
-import { LESSONS, UNITS, UNIT_TITLES } from '@/content/lessons';
+import { LESSON_META as LESSONS } from '@/content/lessons/meta';
+import { UNIT_TITLES } from '@/content/lessons/units';
+
+const UNITS = Object.entries(UNIT_TITLES)
+  .map(([n, title]) => ({ number: Number(n), title, lessons: LESSONS.filter((l) => l.unit === Number(n)) }))
+  .filter((u) => u.lessons.length > 0);
 import { localDate } from '@/lib/progress/dates';
 import { lessonPath } from '@/lib/progress/unlock';
 import { useApp } from '@/lib/state/store';

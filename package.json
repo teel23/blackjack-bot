@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "prebuild": "tsx scripts/gen-lesson-meta.ts",
     "dev": "next dev",
     "build": "next build && node scripts/build-sw.mjs",
     "start": "node scripts/serve-out.mjs",
@@ -12,7 +13,7 @@
     "test:watch": "vitest",
     "e2e": "playwright test",
     "check:chart": "tsx scripts/compare-chart.ts",
-    "deploy": "npm run build && npx --yes netlify-cli deploy --prod --dir out"
+    "deploy": "npm run build && npx --yes netlify-cli deploy --prod --no-build --dir out --site f7f62ddb-caff-4442-b929-b742555c1035"
   },
   "dependencies": {
     "next": "16.4.0",

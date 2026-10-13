@@ -24,8 +24,11 @@ before assumptions about anything outside this repo.
 - Next.js 16 (App Router) + TypeScript + Tailwind 4, **static export** (`output: 'export'`) → `out/`.
 - State: zustand with a hand-rolled versioned localStorage layer (`lib/storage`).
 - Tests: Vitest (`tests/unit`), Playwright WebKit on iPhone profiles (`tests/e2e`).
-- Hosting: **Netlify** (site `c2t-blackjack-bot`, account `teel23`), domain `blackjack.c2tbuilds.com`
-  (Namecheap CNAME → `c2t-blackjack-bot.netlify.app`). Deploy with `npm run deploy` (CLI, not git-linked).
+- Hosting: **Netlify** (site `c2t-blackjack-bot`, id `f7f62ddb-caff-4442-b929-b742555c1035`, account
+  `teel23`), domain `blackjack.c2tbuilds.com` (Namecheap CNAME → `c2t-blackjack-bot.netlify.app`).
+  Deploy with `npm run deploy` (CLI, not git-linked — pushing to GitHub does NOT deploy).
+- Playwright is pinned to **1.58.2**: this Mac runs macOS 14 and newer Playwright WebKit builds don't
+  run here. Don't upgrade it without checking `npx playwright install webkit` works.
 - Repo: `github.com/teel23/blackjack-bot` (public). Code lives in `~/dev/blackjack-bot`, NOT iCloud
   (iCloud paths with spaces break builds). The iCloud `Projects/BlackJack Bot/` folder only holds a
   dashboard-format copy of NOTES.md.
@@ -64,4 +67,6 @@ npm run build        # static export + sw.js
 npm start            # serve out/ on :4173
 npm run check:chart -- 1 1 1 1 1   # decks h17 das peek ls — compare chart vs EV calculator
 npm run deploy       # build + Netlify production deploy
+BASE_URL=https://c2t-blackjack-bot.netlify.app npm run e2e   # run e2e against production
+SCREENS=1 npx playwright test   # screenshot tour → .screens/
 ```

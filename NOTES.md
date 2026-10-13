@@ -1,12 +1,12 @@
 # Blackjack Bot — Project Notes
 > iPhone-first blackjack trainer: daily lessons, drills, strategy chart, and a play-money practice table.
 > Reference for jumping back into this project.
-> Last updated: October 12, 2026 (Phase 7 — iPhone hardening)
+> Last updated: October 12, 2026 (Phase 8 — live)
 
 ---
 
 ## Live URL
-🌐 _not deployed yet_ — target **https://blackjack.c2tbuilds.com**
+🌐 **https://blackjack.c2tbuilds.com** (once the DNS record is added) · works now at **https://c2t-blackjack-bot.netlify.app**
 
 ## GitHub
 📁 **https://github.com/teel23/blackjack-bot**
@@ -18,7 +18,7 @@
 Next.js 16 · TypeScript · Tailwind 4 · zustand · localStorage · Vitest · Playwright (WebKit) · Netlify
 
 ## Status
-🔧 In Progress
+✅ Live (beta) on Netlify — deploy with `npm run deploy` (not git-linked)
 
 ---
 
@@ -47,6 +47,17 @@ Run once in **Safari**, then again after **Add to Home Screen** (installed app).
 - [ ] After a later deploy: reopen → "A new version is ready" appears (never mid-hand) → Update reloads.
 
 ## Build log (newest first)
+
+### 2026-10-13 — Phase 8: published
+- Netlify site `c2t-blackjack-bot` created, production deployed (static `out/`, 252 files), security +
+  cache headers via `netlify.toml` (sw.js no-cache, `_next/static` immutable). All routes 200, 404 page works.
+- Custom domain `blackjack.c2tbuilds.com` attached in Netlify. **DNS record not found yet** (checked
+  Namecheap's authoritative servers) — add CNAME `blackjack` → `c2t-blackjack-bot.netlify.app.`
+- Production e2e: 45/45 core flows pass against the live site (`BASE_URL=… npm run e2e`).
+- Lighthouse (mobile, simulated slow 4G + 4× CPU): Accessibility 100, Best Practices 100, SEO 100 on
+  every page; Performance 78–88, CLS 0. Split lesson metadata out of the Today/Learn/Stats bundles
+  (generated `content/lessons/meta.ts`), which took Today from 74 → 88.
+- Portfolio card added to teel23/portfolio (real screenshot from production), pushed → Vercel.
 
 ### 2026-10-13 — Phase 7: iPhone hardening
 - New e2e hardening suite (all 3 iPhones): true relaunch from saved storage mid-hand, daily drill
@@ -147,6 +158,9 @@ sit on known marginal cells, where the published chart is kept.
 ---
 
 ## Open Items
-- [ ] Phase 8: Netlify deploy + blackjack.c2tbuilds.com + portfolio card
+- [ ] **Add DNS:** Namecheap → c2tbuilds.com → Advanced DNS → CNAME `blackjack` → `c2t-blackjack-bot.netlify.app.` (then Netlify issues SSL automatically)
+- [ ] Run the manual iPhone checklist (above) in Safari and as an installed app
+- [ ] Optional: switch portfolio `demoUrl` to https://blackjack.c2tbuilds.com once SSL is live
+- [ ] Optional: connect the GitHub repo in the Netlify UI for auto-deploys on push
 - [ ] Ask Carson: games.c2tbuilds.com tile (teel23/mini-games) — not approved yet
 - [ ] Ask Carson: AI Dashboard entry (add `'BlackJack Bot': 'blackjack-bot'` to ai-dashboard sync-notes folder map, run sync, journal note) — not approved yet

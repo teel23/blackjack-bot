@@ -10,18 +10,9 @@ import { unit8 } from './unit-08-rules';
 import { unit9 } from './unit-09-variance';
 import { unit10 } from './unit-10-counting';
 
-export const UNIT_TITLES: Record<number, string> = {
-  1: 'The basics',
-  2: 'Table flow',
-  3: 'Hard totals',
-  4: 'Doubling',
-  5: 'Soft hands',
-  6: 'Pairs & splits',
-  7: 'Surrender & insurance',
-  8: 'Rule variations',
-  9: 'Bankroll & variance',
-  10: 'Intro to card counting',
-};
+import { UNIT_TITLES } from './units';
+
+export { UNIT_TITLES };
 
 /** The lesson path, in order. Add lessons by appending to a unit file. */
 export const LESSONS: Lesson[] = [...unit1, ...unit2, ...unit3, ...unit4, ...unit5, ...unit6, ...unit7, ...unit8, ...unit9, ...unit10];

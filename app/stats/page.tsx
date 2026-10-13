@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import AppScreen from '@/components/AppScreen';
-import { LESSONS } from '@/content/lessons';
+import { LESSON_META as LESSONS } from '@/content/lessons/meta';
 import { cardLabel } from '@/lib/engine/cards';
 import { localDate } from '@/lib/progress/dates';
 import { reconcileStreak } from '@/lib/progress/streak';

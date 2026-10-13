@@ -11,15 +11,18 @@ export default defineConfig({
   retries: 0,
   reporter: [['list']],
   use: {
-    baseURL: 'http://localhost:4173',
+    // BASE_URL=https://… runs the suite against a deployed site instead of the local build.
+    baseURL: process.env.BASE_URL ?? 'http://localhost:4173',
     trace: 'retain-on-failure',
     serviceWorkers: 'block',
   },
-  webServer: {
-    command: 'node scripts/serve-out.mjs',
-    port: 4173,
-    reuseExistingServer: true,
-  },
+  webServer: process.env.BASE_URL
+    ? undefined
+    : {
+        command: 'node scripts/serve-out.mjs',
+        port: 4173,
+        reuseExistingServer: true,
+      },
   projects: [
     { name: 'iPhone SE', use: { ...devices['iPhone SE (3rd gen)'] } },
     { name: 'iPhone 15', use: { ...devices['iPhone 15'] } },

@@ -1,4 +1,4 @@
-import type { Lesson } from '@/content/lessons/types';
+import type { LessonMeta } from '@/content/lessons/meta';
 import type { LessonProgress } from '../storage/schema';
 
 export type LessonState = 'passed' | 'available' | 'locked';
@@ -6,9 +6,9 @@ export type LessonState = 'passed' | 'available' | 'locked';
 export interface PathState {
   states: Record<string, LessonState>;
   /** The lesson to do next (first available, not yet passed). */
-  next: Lesson | null;
+  next: LessonMeta | null;
   /** A lesson that will open tomorrow because its predecessor was passed today. */
-  unlocksTomorrow: Lesson | null;
+  unlocksTomorrow: LessonMeta | null;
 }
 
 /**
@@ -16,14 +16,14 @@ export interface PathState {
  * passed on. Lessons you've started or passed stay open. `unlockAll` skips the pacing.
  */
 export function lessonPath(
-  lessons: Lesson[],
+  lessons: LessonMeta[],
   progress: Record<string, LessonProgress>,
   today: string,
   unlockAll = false,
 ): PathState {
   const states: Record<string, LessonState> = {};
-  let next: Lesson | null = null;
-  let unlocksTomorrow: Lesson | null = null;
+  let next: LessonMeta | null = null;
+  let unlocksTomorrow: LessonMeta | null = null;
   lessons.forEach((lesson, i) => {
     const p = progress[lesson.id];
     let state: LessonState;

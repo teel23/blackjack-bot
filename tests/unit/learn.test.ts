@@ -92,3 +92,11 @@ describe('Hi-Lo', () => {
     expect(hiLo({ rank: 'A', suit: 'S' })).toBe(-1);
   });
 });
+
+import { LESSON_META } from '@/content/lessons/meta';
+
+describe('generated lesson index', () => {
+  it('matches the lesson content (run `npx tsx scripts/gen-lesson-meta.ts` if this fails)', () => {
+    expect(LESSON_META).toEqual(LESSONS.map(({ id, unit, title, summary }) => ({ id, unit, title, summary })));
+  });
+});

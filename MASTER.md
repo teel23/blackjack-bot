@@ -2,7 +2,7 @@
 
 Locked decisions from the 2026-10-12 kickoff. Change these deliberately, not casually.
 
-**Status:** 🔧 In Progress · **Live URL:** _not deployed yet_ · **Repo:** https://github.com/teel23/blackjack-bot
+**Status:** ✅ Live (beta) · **Live URL:** https://blackjack.c2tbuilds.com (fallback https://c2t-blackjack-bot.netlify.app) · **Repo:** https://github.com/teel23/blackjack-bot
 
 ## Product
 
@@ -78,8 +78,15 @@ No real-money features, no affiliate links, no gambling ads.
 
 ## Publishing
 
-- GitHub `teel23/blackjack-bot` (public) ✅ approved
-- Netlify site `c2t-blackjack-bot` + `blackjack.c2tbuilds.com` ✅ approved (Carson adds the CNAME)
-- Portfolio card in `teel23/portfolio` ✅ approved
+- GitHub `teel23/blackjack-bot` (public) ✅ done
+- Netlify site `c2t-blackjack-bot` (id `f7f62ddb-caff-4442-b929-b742555c1035`, account `teel23`) ✅ deployed;
+  custom domain `blackjack.c2tbuilds.com` attached — needs the Namecheap CNAME `blackjack` →
+  `c2t-blackjack-bot.netlify.app.`; Netlify issues SSL automatically once it resolves.
+- Portfolio card in `teel23/portfolio` ✅ pushed (links the netlify.app URL, which forwards to the
+  custom domain once SSL is live; switch `demoUrl` to blackjack.c2tbuilds.com any time).
 - games.c2tbuilds.com tile ❌ not approved yet — ask
 - AI Dashboard entry ❌ not approved yet — ask
+
+## Deploying
+`npm run deploy` = build + `netlify deploy --prod --no-build --dir out --site f7f62ddb-…`. The repo is
+not git-linked in Netlify (that needs the Netlify GitHub app in the Netlify UI), so pushes don't deploy.
