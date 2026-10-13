@@ -22,7 +22,7 @@ export default function SessionsPage() {
   const active = sessions.active;
   const total = bankroll.balance + (active?.stack ?? 0);
   const points: ChartPoint[] = [...bankroll.history];
-  if (active) points.push({ t: Date.now(), balance: total, kind: 'now' });
+  if (active) points.push({ t: active.lastActiveAt, balance: total, kind: 'now' });
   const past = [...sessions.past].reverse();
   const net = sessions.past.reduce((s, x) => s + x.net, 0);
   const hands = sessions.past.reduce((s, x) => s + x.hands, 0);
