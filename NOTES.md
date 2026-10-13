@@ -1,7 +1,7 @@
 # Blackjack Bot — Project Notes
 > iPhone-first blackjack trainer: daily lessons, drills, strategy chart, and a play-money practice table.
 > Reference for jumping back into this project.
-> Last updated: October 12, 2026 (Phase 3 — bankroll + sessions)
+> Last updated: October 12, 2026 (Phase 4 — lessons + streaks)
 
 ---
 
@@ -23,6 +23,21 @@ Next.js 16 · TypeScript · Tailwind 4 · zustand · localStorage · Vitest · P
 ---
 
 ## Build log (newest first)
+
+### 2026-10-12 — Phase 4: lessons 1–10, daily unlock, daily drill, streaks
+- Lesson data model (`content/lessons`): explanation cards (**bold**, card visuals) + questions —
+  `decision` (answer computed from the chart under standard 6D S17 rules, optional hit/stand-only
+  subsets) and `choice`. Units 1–4 written (10 lessons, original text). Content validated in tests.
+- Lesson player (`/lesson/[id]/`, statically generated): progress bar, per-question feedback, pass at
+  80%, resume mid-lesson after a kill, result screen with "unlocks tomorrow".
+- One-lesson-per-day pacing (`lib/progress/unlock.ts`) + "Unlock all lessons" setting.
+- Daily drill (20 decisions, seeded by date, weighted to misses), drill player (`/drill/`) shared with
+  library drills (speed timer) and mistake review; correct answers auto-advance, misses stop to explain.
+- Streaks: daily goal = today's drill; perfect drill earns a freeze (max 2) that covers missed days.
+- Today screen (streak + 7-day dots, daily goal, next lesson, bankroll/accuracy tiles) and Learn path.
+- iOS install tip (one-time, dismissible).
+- Tests: 154 unit; e2e adds finish lesson + next-day unlock (Playwright clock), resume mid-lesson,
+  full daily drill → streak.
 
 ### 2026-10-12 — Phase 3: bankroll + sessions
 - `/sessions/`: bankroll hero, stat tiles, bankroll-over-time SVG chart (gold line, tap/drag to
@@ -69,7 +84,6 @@ sit on known marginal cells, where the published chart is kept.
 ---
 
 ## Open Items
-- [ ] Phase 4: lessons 1–10 + daily unlock + streaks
 - [ ] Phase 5: drills, strategy chart, stats, review mistakes
 - [ ] Phase 6: lessons 11–30, counting drill, PWA polish, accessibility pass
 - [ ] Phase 7: iPhone hardening (WebKit e2e, kill-and-resume, storage, safe areas, manual checklist)
