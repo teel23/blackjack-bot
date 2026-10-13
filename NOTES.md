@@ -1,7 +1,7 @@
 # Blackjack Bot — Project Notes
 > iPhone-first blackjack trainer: daily lessons, drills, strategy chart, and a play-money practice table.
 > Reference for jumping back into this project.
-> Last updated: October 12, 2026 (Phase 4 — lessons + streaks)
+> Last updated: October 12, 2026 (Phase 5 — drills, chart, stats)
 
 ---
 
@@ -23,6 +23,20 @@ Next.js 16 · TypeScript · Tailwind 4 · zustand · localStorage · Vitest · P
 ---
 
 ## Build log (newest first)
+
+### 2026-10-12 — Phase 5: drills library, strategy chart, stats, review mistakes, settings
+- `/drills/`: hard / soft / pairs / surrender / mixed, accuracy or speed (6s per hand), per-category
+  accuracy, recent drills, review-mistakes entry, counting-drill entry.
+- `/chart/`: Hard/Soft/Pairs tabs from `buildChart(rules)`, letters + Okabe–Ito colors, sticky upcard
+  header, dot on cells changed by your rules, tap → reason, rule note, EV per $100 for every action,
+  your record. Heat-map toggle (sequential red by miss rate, accuracy % in cell).
+- `/stats/`: overall + per-category accuracy, hands/lessons/streak tiles, most-missed hands, recent
+  mistakes (chosen vs correct). Review replays the **exact** missed hands with the options you had;
+  each fixed one drops off.
+- `/settings/`: backup export (iOS share sheet → Files, download fallback) / import with confirm,
+  storage-persistence status, full rules editor, table limits, coach/animations/sound, unlock-all,
+  install-tip toggle, reset all data. `/about/`: responsible framing + 1-800-GAMBLER (call/text) + NCPG.
+- Fixes from e2e: footer link was a 15px tap target; bottom sheets now have a visible close button.
 
 ### 2026-10-12 — Phase 4: lessons 1–10, daily unlock, daily drill, streaks
 - Lesson data model (`content/lessons`): explanation cards (**bold**, card visuals) + questions —
@@ -84,7 +98,6 @@ sit on known marginal cells, where the published chart is kept.
 ---
 
 ## Open Items
-- [ ] Phase 5: drills, strategy chart, stats, review mistakes
 - [ ] Phase 6: lessons 11–30, counting drill, PWA polish, accessibility pass
 - [ ] Phase 7: iPhone hardening (WebKit e2e, kill-and-resume, storage, safe areas, manual checklist)
 - [ ] Phase 8: Netlify deploy + blackjack.c2tbuilds.com + portfolio card

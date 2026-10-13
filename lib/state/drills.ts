@@ -1,6 +1,7 @@
 'use client';
 
-import type { Action } from '../engine/round';
+import type { Card } from '../engine/cards';
+import type { Action, Legal } from '../engine/round';
 import { randomSeed, seedFromString } from '../engine/rng';
 import { grade } from '../learn';
 import { localDate } from '../progress/dates';
@@ -42,20 +43,15 @@ export function startLibraryDrill(filter: DrillFilter, timed: boolean) {
   });
 }
 
-/** Replay recent mistakes (newest first, one per situation). */
+/** Replay your most recent missed hands — the exact cards, newest first. */
 export function startReview(limit = 20): boolean {
   const d = getData();
-  const seen = new Set<string>();
-  const keys: string[] = [];
-  for (const m of [...d.stats.mistakes].reverse()) {
-    if (m.key === 'INS' || seen.has(m.key)) continue;
-    seen.add(m.key);
-    keys.push(m.key);
-    if (keys.length >= limit) break;
-  }
-  if (!keys.length) return false;
+  const picks = [...d.stats.mistakes].reverse().filter((m) => m.key !== 'INS').slice(0, limit);
+  if (!picks.length) return false;
   update((x) => {
-    x.progress.activeDrill = newDrill('review', 'mistakes', false, localDate(), randomSeed(), keys);
+    const drill = newDrill('review', 'mistakes', false, localDate(), randomSeed(), picks.map((m) => m.id));
+    drill.hands = picks.map((m) => ({ cards: m.cards, up: m.up, legal: m.legal }));
+    x.progress.activeDrill = drill;
   });
   return true;
 }
@@ -65,8 +61,9 @@ function newDrill(kind: ActiveDrill['kind'], mode: string, timed: boolean, date:
 }
 
 /** The hand for question i of the active drill (deterministic, so resuming shows the same cards). */
-export function drillHand(a: ActiveDrill, i = a.index) {
+export function drillHand(a: ActiveDrill, i = a.index): { key: string; cards: Card[]; up: Card; legal?: Legal } | null {
   const key = a.queue[i];
+  if (a.hands) return a.hands[i] ? { key, ...a.hands[i] } : null;
   const hand = key ? handForKey(key, (a.seed + i * 7919) >>> 0) : null;
   return hand ? { key, ...hand } : null;
 }
@@ -77,8 +74,10 @@ export function drillAnswer(chosen: Action | 'timeout', ms: number) {
     if (!a || a.answers.length > a.index) return;
     const hand = drillHand(a);
     if (!hand) return;
-    const g = grade(hand.cards, hand.up, d.settings.rules);
+    const g = grade(hand.cards, hand.up, d.settings.rules, undefined, hand.legal);
     const ok = chosen === g.rec.action;
+    // Fixed it: drop that mistake from the review list.
+    if (ok && a.kind === 'review') d.stats.mistakes = d.stats.mistakes.filter((m) => m.id !== hand.key);
     a.answers.push({ key: g.rec.situation.key, ok, ms });
     const category: StatCategory = g.legal.surrender && g.rec.code.startsWith('R') ? 'surrender' : g.rec.situation.kind;
     recordDecision(d, {

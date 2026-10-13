@@ -71,7 +71,7 @@ test('daily drill: 20 decisions completes the goal and starts a streak', async (
     const save = await readSave(page);
     const a = save.progress.activeDrill!;
     const hand = drillHand(a)!;
-    const g = grade(hand.cards, hand.up, save.settings.rules);
+    const g = grade(hand.cards, hand.up, save.settings.rules, undefined, hand.legal);
     // Miss one on purpose to see the correction flow.
     if (i === 3) {
       const wrong = (['hit', 'stand'] as const).find((x) => x !== g.rec.action)!;

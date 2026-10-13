@@ -38,7 +38,8 @@ export function isTenValue(card: Card): boolean {
 }
 
 export function cardLabel(card: Card): string {
-  const suit = { S: '♠', H: '♥', D: '♦', C: '♣' }[card.suit];
+  // U+FE0E forces text (not emoji) presentation on iOS.
+  const suit = { S: '♠\uFE0E', H: '♥\uFE0E', D: '♦\uFE0E', C: '♣\uFE0E' }[card.suit];
   return `${card.rank}${suit}`;
 }
 

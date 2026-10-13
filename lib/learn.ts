@@ -32,8 +32,8 @@ export interface Graded {
   reason: string;
 }
 
-export function grade(cards: readonly Card[], up: Card, rules: Rules, only?: readonly Action[]): Graded {
-  const legal = firstDecisionLegal(cards, rules, only);
+export function grade(cards: readonly Card[], up: Card, rules: Rules, only?: readonly Action[], legalOverride?: Legal): Graded {
+  const legal = legalOverride ?? firstDecisionLegal(cards, rules, only);
   const rec = recommend(rules, cards, up, legal);
   return { rec, legal, reason: reasonFor(rec.situation, rec.action, rec.code) };
 }

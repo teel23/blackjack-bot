@@ -154,6 +154,8 @@ export interface ActiveDrill {
   startedAt: number;
   /** Counting drill: the cards shown and the true running count. */
   count?: { cards: Card[]; answer: number; shown: boolean; guess: number | null };
+  /** Review drills replay exact hands (queue holds mistake ids). */
+  hands?: { cards: Card[]; up: Card; legal: Legal }[];
 }
 
 export interface Streak {

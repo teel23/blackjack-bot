@@ -8,7 +8,6 @@ import type { Action } from '@/lib/engine/round';
 import { usePrefersReducedMotion } from '@/lib/hooks';
 import { grade } from '@/lib/learn';
 import { DRILL_FILTERS } from '@/lib/progress/drillPicker';
-import { parseSituationKey } from '@/lib/strategy/chart';
 import {
   type DrillSummary,
   SPEED_SECONDS,
@@ -40,7 +39,7 @@ export default function DrillPlayer() {
   const shownAt = useRef(0);
 
   const hand = useMemo(() => (drill ? drillHand(drill) : null), [drill]);
-  const g = useMemo(() => (hand ? grade(hand.cards, hand.up, rules) : null), [hand, rules]);
+  const g = useMemo(() => (hand ? grade(hand.cards, hand.up, rules, undefined, hand.legal) : null), [hand, rules]);
   const answered = !!drill && drill.answers.length > drill.index;
   const last = answered ? drill!.answers[drill!.index] : null;
 
@@ -91,7 +90,7 @@ export default function DrillPlayer() {
     if (drill.kind !== 'daily') abandonDrill();
     router.push(drill.kind === 'daily' ? '/' : '/learn/');
   };
-  const sit = parseSituationKey(hand.key);
+  const sit = g.rec.situation;
 
   return (
     <FocusScreen
@@ -120,7 +119,7 @@ export default function DrillPlayer() {
               <span aria-hidden="true">{last.ok ? '✅ ' : '❌ '}</span>
               {last.ok
                 ? `${ACTION_LABEL[g.rec.action]} — correct`
-                : `${sit ? situationLabel(sit) : ''}: ${ACTION_LABEL[g.rec.action]}${chosen === 'timeout' ? ' (time ran out)' : ''}`}
+                : `${situationLabel(sit)}: ${ACTION_LABEL[g.rec.action]}${chosen === 'timeout' ? ' (time ran out)' : ''}`}
             </p>
             {!last.ok && <p className="mt-1 text-[15px] text-muted">{g.reason}</p>}
           </div>
