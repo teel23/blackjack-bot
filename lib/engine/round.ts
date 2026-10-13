@@ -29,6 +29,8 @@ export interface InsuranceState {
 }
 
 export interface Round {
+  /** Unique within a shoe's life: "<shuffle>.<position>". */
+  id: string;
   rules: Rules;
   shoe: Shoe;
   phase: Phase;
@@ -92,12 +94,14 @@ export function startRound({ rules, shoe, bet, bankroll }: StartOptions): Round 
     s = shuffleShoe(s);
     reshuffled = true;
   }
+  const id = `${s.shuffles}.${s.pos}`;
   const p1 = drawCard(s);
   const up = drawCard(s);
   const p2 = drawCard(s);
   const hole = drawCard(s);
 
   const round: Round = {
+    id,
     rules,
     shoe: s,
     phase: 'player',

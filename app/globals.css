@@ -1,26 +1,158 @@
 @import "tailwindcss";
 
+/* Dark is the default (and only) theme: a casino-felt green on near-black. */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #0a100e;
+  --surface: #121b18;
+  --surface-2: #19251f;
+  --surface-3: #22312a;
+  --border: #2a3b34;
+  --text: #eef4f1;
+  --muted: #9fb3ab;
+  --faint: #6f857c;
+  --felt: #0f5b3d;
+  --felt-dark: #083524;
+  --felt-edge: #052419;
+  --gold: #f4c55b;
+  --good: #3ddc97;
+  --bad: #ff7a7a;
+  --info: #6cb4ff;
+
+  /* Strategy codes — Okabe–Ito based, color-blind safe; letters are always shown too. */
+  --act-hit: #d55e00;
+  --act-stand: #f0e442;
+  --act-double: #009e73;
+  --act-split: #56b4e9;
+  --act-surrender: #cc79a7;
+
+  --card-w: clamp(50px, min(16vw, 10.5dvh), 86px);
+  --anim: 260ms;
+  --tabbar-h: 58px;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+
+  color-scheme: dark;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-line: var(--border);
+  --color-ink: var(--text);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-felt: var(--felt);
+  --color-gold: var(--gold);
+  --color-good: var(--good);
+  --color-bad: var(--bad);
+  --color-info: var(--info);
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, "Segoe UI", Roboto, sans-serif;
+  --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Rounded", "SF Pro Display", system-ui, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  background: var(--bg);
+  overscroll-behavior: none;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  min-height: 100dvh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  -webkit-tap-highlight-color: transparent;
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior: none;
 }
+
+button,
+a,
+input,
+select,
+label {
+  touch-action: manipulation;
+}
+
+button {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Safari zooms into inputs under 16px. */
+input,
+select,
+textarea {
+  font-size: max(16px, 1rem);
+}
+
+:focus-visible {
+  outline: 3px solid var(--info);
+  outline-offset: 2px;
+}
+
+.game-surface {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.felt {
+  background:
+    radial-gradient(120% 70% at 50% 35%, #157a52 0%, var(--felt) 38%, var(--felt-dark) 78%, var(--felt-edge) 100%);
+}
+
+.pt-safe { padding-top: var(--safe-top); }
+.pb-safe { padding-bottom: var(--safe-bottom); }
+.px-safe { padding-left: max(16px, var(--safe-left)); padding-right: max(16px, var(--safe-right)); }
+
+/* ── Motion (transform/opacity only) ───────────────────────────────────── */
+@keyframes deal-in {
+  from { transform: translate3d(38vw, -34vh, 0) rotate(-12deg) scale(0.9); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+@keyframes flip-in {
+  from { transform: perspective(600px) rotateY(90deg); }
+  to { transform: perspective(600px) rotateY(0deg); }
+}
+@keyframes pop-in {
+  0% { transform: scale(0.6); opacity: 0; }
+  70% { transform: scale(1.06); opacity: 1; }
+  100% { transform: scale(1); }
+}
+@keyframes fade-up {
+  from { transform: translateY(8px); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+.anim-deal { animation: deal-in var(--anim) cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.anim-flip { animation: flip-in calc(var(--anim) * 0.9) ease-out both; }
+.anim-pop { animation: pop-in calc(var(--anim) * 1.2) ease-out both; }
+.anim-fade { animation: fade-up calc(var(--anim) * 1.1) ease-out both; }
+.anim-shake { animation: shake 240ms ease-in-out 1; }
+
+.no-anim .anim-deal,
+.no-anim .anim-flip,
+.no-anim .anim-pop,
+.no-anim .anim-fade {
+  animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .anim-deal, .anim-flip, .anim-pop, .anim-fade, .anim-shake { animation: none !important; }
+}
+
+/* Hide scrollbars on horizontal pill rows but keep them scrollable where used. */
+.scroll-hidden { scrollbar-width: none; }
+.scroll-hidden::-webkit-scrollbar { display: none; }

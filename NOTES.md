@@ -1,7 +1,7 @@
 # Blackjack Bot — Project Notes
 > iPhone-first blackjack trainer: daily lessons, drills, strategy chart, and a play-money practice table.
 > Reference for jumping back into this project.
-> Last updated: October 12, 2026 (Phase 1 — engine + strategy)
+> Last updated: October 12, 2026 (Phase 2 — practice table)
 
 ---
 
@@ -24,6 +24,21 @@ Next.js 16 · TypeScript · Tailwind 4 · zustand · localStorage · Vitest · P
 
 ## Build log (newest first)
 
+### 2026-10-12 — Phase 2: practice table + coach mode
+- Versioned save layer (`lib/storage`): one `bjbot:data` key, sanitize/repair on load, corrupt data
+  backed up to `bjbot:corrupt:<ts>` with a notice, `navigator.storage.persist()`, export/import helpers.
+- zustand store with save-after-every-change (microtask) + flush on `pagehide`/hidden.
+- Table: SVG card art (suits as paths so iOS never shows emoji), deal/flip animations that never
+  replay on resume, dealer reveal sequence with tap-to-skip, fixed-height coach banner and action
+  bar (no layout jumps), illegal actions disabled, color-coded actions matching the chart colors.
+- Coach mode (✅/❌ + correct play + reason), take-back on mistakes (mistake stays in stats), hint
+  button (counted, excluded from accuracy), insurance/even-money prompt, chips + table min/max.
+- Lobby: buy-in sessions + quick play (separate stack). 4 split hands fit at 375px (compact labels).
+- **Playwright pinned to 1.58.2**: this Mac is on macOS 14, and newer Playwright only ships a frozen
+  WebKit build for macOS 14 that fails ("Unknown setting: PushAPIEnabled"). 1.58.2 = WebKit 26.0.
+- E2E (WebKit, iPhone SE 3rd gen / 15 / 15 Pro Max): play a hand, take-back, split + double,
+  kill-and-resume mid-hand, insurance. 15/15 green. Screenshot tour: `SCREENS=1 npx playwright test`.
+
 ### 2026-10-12 — Phase 1: engine + strategy tables
 - Scaffolded Next 16.4 app in `~/dev/blackjack-bot`, static export (`out/`), turned off the new
   cacheComponents/partialPrefetching defaults (not needed for an all-client static app).
@@ -44,7 +59,6 @@ sit on known marginal cells, where the published chart is kept.
 ---
 
 ## Open Items
-- [ ] Phase 2: practice table + coach mode
 - [ ] Phase 3: bankroll + sessions + history
 - [ ] Phase 4: lessons 1–10 + daily unlock + streaks
 - [ ] Phase 5: drills, strategy chart, stats, review mistakes
