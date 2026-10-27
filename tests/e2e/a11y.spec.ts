@@ -7,7 +7,8 @@ const PAGES = ['/', '/learn/', '/drills/', '/play/', '/chart/', '/stats/', '/ses
 
 test('no serious accessibility violations on main screens', async ({ page }, info) => {
   test.skip(info.project.name !== 'iPhone 15', 'one device is enough for the audit');
-  test.setTimeout(120_000);
+  // 11 axe audits in one test; under a full 3-worker run this needs more than 2 minutes.
+  test.setTimeout(240_000);
   const d = defaultData();
   d.settings.installTipDismissed = false;
   await withSave(page, d);

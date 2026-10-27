@@ -13,6 +13,11 @@
     "test:watch": "vitest",
     "e2e": "playwright test",
     "check:chart": "tsx scripts/compare-chart.ts",
+    "home:setup": "node scripts/home.mjs setup",
+    "home:deploy": "node scripts/home.mjs deploy",
+    "home:status": "node scripts/home.mjs status",
+    "home:uninstall": "node scripts/home.mjs uninstall",
+    "e2e:home": "playwright test --config playwright.home.config.ts",
     "deploy": "npm run build && npx --yes netlify-cli deploy --prod --no-build --dir out --site f7f62ddb-caff-4442-b929-b742555c1035"
   },
   "dependencies": {
