@@ -70,9 +70,28 @@ Footer + About: "Educational trainer. Play money only. Basic strategy reduces th
 doesn't eliminate it." About links to the National Problem Gambling Helpline (1-800-GAMBLER).
 No real-money features, no affiliate links, no gambling ads.
 
+## Mac sync (approved 2026-10-27)
+
+Carson's Mac is the app's home. No third-party services, accounts, databases or hosting.
+
+- `scripts/home-server.mjs` (plain Node, no deps): HTTPS on :8443 with an mkcert cert for
+  `<LocalHostName>.local`, `localhost`, `127.0.0.1`. Serves a deployed copy of the static build with the
+  `netlify.toml` headers. LAN/loopback clients only, same-origin `Origin` required for writes.
+- API (JSON): `GET /api/ping`, `GET /api/save` (404 when empty), `PUT /api/save`
+  (`baseRevision` must match, else 409 + current copy), `POST /api/conflict` (archives the losing copy).
+  Atomic writes (temp + fsync + rename), 5 MB cap, `version` must be numeric. Hourly history, newest 200.
+- Data: `~/blackjack-bot-data/` (not iCloud, not the repo). Best-effort mirror to iCloud `data/save.json`.
+- Client (`lib/sync`): localStorage stays the source of truth on the phone. Push ~5 s after a change and on
+  launch / visible / online / pagehide (keepalive) / "Sync now", 3 s timeouts, skipped when unchanged.
+  Fresh device with no progress adopts the Mac copy; a newer Mac copy is adopted only with no unsynced
+  local changes and never mid-hand/lesson/drill; both changed → banner, the copy not kept is archived.
+- Settings → Mac sync card (status, path, Sync now); hidden when `/api/ping` is missing (Netlify).
+- Netlify is unchanged: same build, sync hidden.
+
 ## Explicitly out of scope
 
-- Accounts, sync, backend, Supabase.
+- Accounts, cloud sync, third-party backends, Supabase. (The home server on Carson's Mac is the one
+  approved exception, 2026-10-27 — see above.)
 - Push/scheduled notifications (iOS web needs a push server for those).
 - Multiplayer, side bets, real-money anything.
 

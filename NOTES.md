@@ -1,26 +1,85 @@
 # Blackjack Bot — Project Notes
 > iPhone-first blackjack trainer: daily lessons, drills, strategy chart, and a play-money practice table.
 > Reference for jumping back into this project.
-> Last updated: October 13, 2026 (Phase 8 — live)
+> Last updated: October 27, 2026 (Mac sync — runs from my Mac)
 
 ---
 
 ## Live URL
 🌐 **https://blackjack.c2tbuilds.com** (once the DNS record is added) · works now at **https://c2t-blackjack-bot.netlify.app**
+🏠 **https://Carsons-MacBook-Air.local:8443** — served from my Mac on home Wi-Fi, progress synced to the Mac
 
 ## GitHub
 📁 **https://github.com/teel23/blackjack-bot**
 
 ## Local Path
-`~/dev/blackjack-bot` (code) · `iCloud/COMPUTER/AI/Projects/BlackJack Bot/` (notes copy only)
+`~/dev/blackjack-bot` (code) · `~/blackjack-bot-data/` (home server data) · `iCloud/COMPUTER/AI/Projects/BlackJack Bot/` (docs copy + `data/save.json` mirror)
 
 ## Tech Stack
-Next.js 16 · TypeScript · Tailwind 4 · zustand · localStorage · Vitest · Playwright (WebKit) · Netlify
+Next.js 16 · TypeScript · Tailwind 4 · zustand · localStorage · Vitest · Playwright (WebKit) · Netlify · home server (Node + mkcert)
 
 ## Status
 ✅ Live (beta) on Netlify — deploy with `npm run deploy` (not git-linked)
+✅ Also runs from my Mac — `npm run home:deploy` after changes (see "Run from my Mac")
 
 ---
+
+## Run from my Mac
+My Mac serves the app over HTTPS on home Wi-Fi and keeps a copy of my progress in a file. No accounts,
+no cloud, no third-party anything. The phone still saves to its own storage after every move and works
+offline anywhere; when it can reach the Mac it copies its save there automatically, and catches up next
+time when it can't. Netlify is unchanged (no sync there — the Mac sync card is hidden).
+
+| What | Where |
+|---|---|
+| URL | `https://Carsons-MacBook-Air.local:8443` (from `scutil --get LocalHostName`) |
+| Save | `~/blackjack-bot-data/save.json` (+ `history/` hourly, newest 200 · `conflicts/` never auto-deleted) |
+| Deployed site | `~/blackjack-bot-data/site` → symlink to the current build in `site-builds/` |
+| Cert | `~/blackjack-bot-data/certs/` (mkcert) · CA for the iPhone: `$(mkcert -CAROOT)/rootCA.pem` |
+| Logs | `~/blackjack-bot-data/logs/server.log`, `server.err.log` |
+| Service | LaunchAgent `~/Library/LaunchAgents/com.c2tbuilds.blackjack.plist` (starts at login, restarts if it dies) |
+| iCloud mirror | `iCloud/…/Projects/BlackJack Bot/data/save.json` — best-effort copy only; failures are just logged |
+
+```
+npm run home:setup      # one time; safe to rerun (also regenerates the cert if the Mac's name changes)
+npm run home:deploy     # after code changes: build, swap the site in atomically, restart the server
+npm run home:status     # is it running, URL, last save + revision, paths, recent log lines
+npm run home:uninstall  # remove the LaunchAgent; data stays in ~/blackjack-bot-data
+curl --cacert "$(mkcert -CAROOT)/rootCA.pem" https://Carsons-MacBook-Air.local:8443/api/ping
+```
+
+- Why not keep the data in iCloud: iCloud evicts files to save space and then reads fail with "Resource
+  deadlock avoided". The real copy lives in `~/blackjack-bot-data`; iCloud only gets a mirror.
+- Optional: `mkcert -install` makes Safari **on the Mac** trust the cert too (asks for the Mac password).
+  The iPhone doesn't need it — it trusts the CA profile instead.
+- Restore an old save: stop the server (`npm run home:uninstall`), copy a file from `history/` over
+  `save.json` (bump `revision` above the current one so phones pick it up), `npm run home:setup`.
+- Conflicts: if the phone and the Mac both changed, the app shows "Your Mac has different progress from
+  [time]. Keep this phone's / Use the Mac's". The copy you don't keep is saved in `conflicts/`.
+- Sync rules: pushes ~5 s after a change, on launch, when the app comes back to the front, when the
+  network comes back, on close, and from Settings → Mac sync → Sync now. 3 s timeouts, so away from home
+  costs nothing. A fresh install with no progress takes the Mac's copy. A newer Mac copy is only loaded
+  when this device has no unsynced changes, and never mid-hand, mid-lesson or mid-drill.
+
+### Moving my current progress over (Netlify → Mac app)
+The Netlify app and the Mac app are different websites, so their storage doesn't carry over. Do this
+**only after the iPhone checklist steps 1–4 pass**:
+1. Open the Netlify app (blackjack.c2tbuilds.com / c2t-blackjack-bot.netlify.app) → Settings → **Export
+   backup** → Save to Files.
+2. Open the Mac app from the Home Screen → Settings → **Import backup** → pick that file → Replace.
+3. Settings → Mac sync → **Sync now** → "Copied to Mac". (`npm run home:status` shows the new revision.)
+
+### iPhone checklist — Mac sync
+1. [ ] AirDrop `rootCA.pem` to the iPhone. Then go to Settings → General → VPN & Device Management and
+   install the profile. Then go to Settings → General → About → Certificate Trust Settings and turn on
+   full trust for it. If iOS doesn't recognize the file, rename it to `.crt`.
+2. [ ] On home Wi-Fi, open `https://Carsons-MacBook-Air.local:8443` in Safari. It should load with no
+   warning. Add it to the Home Screen.
+3. [ ] Open the Home Screen app and play a hand. Settings → Mac sync should say "Copied to Mac".
+4. [ ] Turn on Airplane Mode. Every tab still works, and so does playing a hand. Turn Airplane Mode off
+   and tap Sync now. It catches up.
+5. [ ] Only after 1–4 pass: export a backup from the Netlify app and import it into the Mac app.
+
 
 ## Manual iPhone checklist
 Run once in **Safari**, then again after **Add to Home Screen** (installed app). ~10 minutes.
@@ -47,6 +106,35 @@ Run once in **Safari**, then again after **Add to Home Screen** (installed app).
 - [ ] After a later deploy: reopen → "A new version is ready" appears (never mid-hand) → Update reloads.
 
 ## Build log (newest first)
+
+### 2026-10-27 — Mac sync: run from my Mac, progress saved on my Mac
+- Approved change to the "no backend / no sync" rule, for one thing only: a small HTTPS server on my own
+  Mac (plus mkcert). No third-party services. Netlify unchanged; `npm run deploy` not run.
+- `scripts/home-server.mjs` (plain Node): HTTPS :8443, serves `~/blackjack-bot-data/site` with the
+  netlify.toml headers; `/api/ping`, `/api/save` (GET/PUT with revisions, 409 + current copy on
+  mismatch), `/api/conflict`. Atomic writes (temp → fsync → rename), serialized PUTs, 5 MB cap, numeric
+  `version` required, LAN/loopback + same-subnet IPv6 only, same-origin `Origin` for writes. Hourly
+  history (newest 200), conflicts archived forever, best-effort iCloud mirror.
+- `scripts/home.mjs`: `home:setup` (mkcert via Homebrew or release download, cert for
+  `<LocalHostName>.local` regenerated when the name changes, folders, deploy, LaunchAgent with the
+  absolute node path, prints iPhone steps, reveals `rootCA.pem` in Finder), `home:deploy` (build → copy →
+  atomic symlink swap → `launchctl kickstart -k`), `home:status`, `home:uninstall`.
+- Client `lib/sync`: separate `bjbot:sync` metadata (device id, last synced revision + hash, local change
+  time, last sync), pure decision rules (`decide.ts`), engine with debounced/launch/visible/online/
+  pagehide-keepalive/Sync-now pushes, conflict banner (Keep this phone's / Use the Mac's — loser archived
+  first), Settings → Mac sync card. Save path and save-after-every-action unchanged; `SAVE_VERSION` not
+  bumped for sync. Reset all data keeps the sync metadata so the reset syncs instead of being undone.
+- **Service worker fix:** `/api/*` is never intercepted or cached (before, any GET fell through to
+  cache-first, so `/api/save` would have been cached).
+- Also committed: surrender is opt-in (off by default, save v2 migration switches it off; Surrender
+  button/drill/legend/stats only when the rules offer it).
+- Tests: 212 unit (27 new: sync decisions + engine, home server API/static) · static e2e 83 passed / 4 skipped
+  (new: sync hidden on the web version) · home-server e2e 18/18 (`npm run e2e:home`, 6 tests ×3 iPhones: hand reaches save.json,
+  offline play + catch-up, fresh install adopts, conflict banner + conflicts/, `/api/save` never from SW cache).
+- Fixed a flaky a11y e2e: axe's default mode hung in WebKit's `newPage()` under a full run → legacy mode.
+- `home:setup` run on this Mac: mkcert via Homebrew, cert for Carsons-MacBook-Air.local, LaunchAgent running.
+  `curl --cacert "$(mkcert -CAROOT)/rootCA.pem" https://Carsons-MacBook-Air.local:8443/api/ping` → ok; also
+  answers on the Wi-Fi IPv4 and IPv6 addresses. macOS firewall is off, so no node prompt.
 
 ### 2026-10-13 — Phase 8: published
 - Netlify site `c2t-blackjack-bot` created, production deployed (static `out/`, 252 files), security +
@@ -158,6 +246,8 @@ sit on known marginal cells, where the published chart is kept.
 ---
 
 ## Open Items
+- [ ] **Mac sync iPhone checklist** (above) — trust the CA, install from the Mac URL, test offline, then move progress over
+- [ ] Next.js printed a security advisory for 16.4.0 during the build — decide whether to upgrade (not done here)
 - [ ] **Add DNS:** Namecheap → c2tbuilds.com → Advanced DNS → CNAME `blackjack` → `c2t-blackjack-bot.netlify.app.` (then Netlify issues SSL automatically)
 - [ ] Run the manual iPhone checklist (above) in Safari and as an installed app
 - [ ] Optional: switch portfolio `demoUrl` to https://blackjack.c2tbuilds.com once SSL is live
