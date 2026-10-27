@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useRef, useState } from 'react';
 import AppScreen from '@/components/AppScreen';
 import BottomSheet from '@/components/BottomSheet';
+import MacSyncCard from '@/components/MacSyncCard';
 import Toggle from '@/components/Toggle';
 import { DEFAULT_RULES, type Rules, rulesSummary } from '@/lib/engine/rules';
 import { money } from '@/lib/progress/dates';
@@ -117,6 +118,8 @@ export default function SettingsPage() {
           </p>
         )}
       </Section>
+
+      <MacSyncCard />
 
       <Section
         title="Table rules"

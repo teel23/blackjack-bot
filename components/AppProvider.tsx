@@ -4,6 +4,8 @@ import { useEffect } from 'react';
 import { hydrate, useApp } from '@/lib/state/store';
 import '@/lib/state/progress';
 import NoticeBanner from './NoticeBanner';
+import SyncBanner from './SyncBanner';
+import { startSync } from '@/lib/sync/engine';
 import ServiceWorker from './ServiceWorker';
 import DynamicType from './DynamicType';
 import { useAudioUnlock } from '@/lib/audio';
@@ -12,6 +14,7 @@ export default function AppProvider({ children }: { children: React.ReactNode })
   const hydrated = useApp((s) => s.hydrated);
   useEffect(() => {
     hydrate();
+    startSync();
   }, []);
   useAudioUnlock();
 
@@ -25,6 +28,7 @@ export default function AppProvider({ children }: { children: React.ReactNode })
         </div>
       )}
       <NoticeBanner />
+      {hydrated && <SyncBanner />}
       <ServiceWorker />
       <DynamicType />
     </>

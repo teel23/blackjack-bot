@@ -133,7 +133,8 @@ export function clearAllData() {
   const keys: string[] = [];
   for (let i = 0; i < storage.length; i++) {
     const k = storage.key(i);
-    if (k?.startsWith('bjbot:')) keys.push(k);
+    // Mac sync bookkeeping survives a reset, so the reset itself syncs instead of the old Mac copy coming back.
+    if (k?.startsWith('bjbot:') && k !== 'bjbot:sync') keys.push(k);
   }
   keys.forEach((k) => storage.removeItem(k));
   lastWritten = '';

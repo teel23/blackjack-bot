@@ -47,6 +47,8 @@ self.addEventListener('fetch', (event) => {
   if (request.method !== 'GET') return;
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
+  // Home-server API (Mac sync): always straight to the network, never cached or faked offline.
+  if (url.pathname.startsWith('/api/')) return;
 
   // Pages: network first (fresh deploys), cached copy when offline or slow.
   if (request.mode === 'navigate') {
