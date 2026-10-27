@@ -13,6 +13,7 @@ import { useApp } from '@/lib/state/store';
 import { situationLabel } from '@/lib/state/table';
 import { ACTION_LABEL, parseSituationKey } from '@/lib/strategy/chart';
 import type { StatCategory } from '@/lib/storage/schema';
+import { surrenderAvailable } from '@/lib/engine/rules';
 
 const CATS: { id: StatCategory; label: string }[] = [
   { id: 'hard', label: 'Hard totals' },
@@ -57,7 +58,7 @@ export default function StatsPage() {
       <section className="mt-6 rounded-3xl border border-line bg-surface p-4" aria-label="Accuracy by category">
         <h2 className="text-base font-bold">By category</h2>
         <ul className="mt-3 flex flex-col gap-3">
-          {CATS.map(({ id, label: name }) => {
+          {CATS.filter(({ id }) => id !== 'surrender' || surrenderAvailable(data.settings.rules) || stats.categories.surrender.n > 0).map(({ id, label: name }) => {
             const c = stats.categories[id];
             const acc = accuracy(c.n, c.correct);
             return (

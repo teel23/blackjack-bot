@@ -58,7 +58,7 @@ describe('sessions', () => {
     stack([10, 6], 10, 7, [9]);
     setBet(25);
     deal();
-    playAction('stand'); // wrong: surrender is correct
+    playAction('stand'); // wrong: hit is correct (no surrender by default)
     expect(getData().sessions.active?.stack).toBe(75);
     takeBack();
     const d = getData();

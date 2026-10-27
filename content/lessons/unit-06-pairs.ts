@@ -16,8 +16,7 @@ export const unit6: Lesson[] = [
       {
         title: '8s: escape 16',
         body:
-          '8,8 is **16, the worst total in the game**. Split it into two hands starting at 8. Against a 10 or ace you\'ll still lose money on average — just less than you\'d lose playing 16.\n\n' +
-          '(At H17 tables with surrender, 8,8 vs an ace is surrendered instead. Unit 8.)',
+          '8,8 is **16, the worst total in the game**. Split it into two hands starting at 8. Against a 10 or ace you\'ll still lose money on average — just less than you\'d lose playing 16.',
         visual: { dealer: ['K', 6], hole: true, player: [8, 8] },
       },
     ],

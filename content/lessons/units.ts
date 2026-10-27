@@ -6,7 +6,7 @@ export const UNIT_TITLES: Record<number, string> = {
   4: 'Doubling',
   5: 'Soft hands',
   6: 'Pairs & splits',
-  7: 'Surrender & insurance',
+  7: 'Insurance & surrender',
   8: 'Rule variations',
   9: 'Bankroll & variance',
   10: 'Intro to card counting',

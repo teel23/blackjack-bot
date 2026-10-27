@@ -2,7 +2,7 @@ import { expect, test, type Page } from '@playwright/test';
 import { LESSONS } from '../../content/lessons';
 import { ACTION_LABEL } from '../../lib/strategy/chart';
 import { gradeLessonQuestion, grade } from '../../lib/learn';
-import { drillHand } from '../../lib/state/drills';
+import { drillHand, drillLegal } from '../../lib/state/drills';
 import { defaultData } from '../../lib/storage/schema';
 import { expectNoHorizontalOverflow, readSave, withSave } from './helpers';
 
@@ -71,7 +71,7 @@ test('daily drill: 20 decisions completes the goal and starts a streak', async (
     const save = await readSave(page);
     const a = save.progress.activeDrill!;
     const hand = drillHand(a)!;
-    const g = grade(hand.cards, hand.up, save.settings.rules, undefined, hand.legal);
+    const g = grade(hand.cards, hand.up, save.settings.rules, undefined, drillLegal(hand, save.settings.rules));
     // Miss one on purpose to see the correction flow.
     if (i === 3) {
       const wrong = (['hit', 'stand'] as const).find((x) => x !== g.rec.action)!;

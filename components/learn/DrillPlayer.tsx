@@ -6,6 +6,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { play as sfx } from '@/lib/audio';
 import type { Action } from '@/lib/engine/round';
 import { usePrefersReducedMotion } from '@/lib/hooks';
+import { surrenderAvailable } from '@/lib/engine/rules';
 import { grade } from '@/lib/learn';
 import { DRILL_FILTERS } from '@/lib/progress/drillPicker';
 import {
@@ -14,6 +15,7 @@ import {
   abandonDrill,
   drillAnswer,
   drillHand,
+  drillLegal,
   drillNext,
   startReview,
 } from '@/lib/state/drills';
@@ -39,7 +41,7 @@ export default function DrillPlayer() {
   const shownAt = useRef(0);
 
   const hand = useMemo(() => (drill ? drillHand(drill) : null), [drill]);
-  const g = useMemo(() => (hand ? grade(hand.cards, hand.up, rules, undefined, hand.legal) : null), [hand, rules]);
+  const g = useMemo(() => (hand ? grade(hand.cards, hand.up, rules, undefined, drillLegal(hand, rules)) : null), [hand, rules]);
   const answered = !!drill && drill.answers.length > drill.index;
   const last = answered ? drill!.answers[drill!.index] : null;
 
@@ -134,6 +136,7 @@ export default function DrillPlayer() {
               legal={g.legal}
               onPick={pick}
               disabled={answered}
+              surrender={surrenderAvailable(rules)}
               marks={answered ? { chosen: chosen === 'timeout' ? null : chosen, correct: g.rec.action } : undefined}
             />
           )}

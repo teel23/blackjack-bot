@@ -24,7 +24,7 @@ export default function LearnPage() {
       <Link href="/drills/" className="flex items-center justify-between rounded-3xl felt p-5 text-white shadow-lg">
         <span>
           <span className="block text-xl font-bold">Drills</span>
-          <span className="mt-0.5 block text-sm text-white/75">Hard, soft, pairs, surrender, counting — speed or accuracy.</span>
+          <span className="mt-0.5 block text-sm text-white/75">Hard, soft, pairs, counting — speed or accuracy.</span>
         </span>
         <span aria-hidden="true" className="text-2xl">→</span>
       </Link>

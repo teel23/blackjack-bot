@@ -167,7 +167,7 @@ export default function SettingsPage() {
           onChange={(v) => setRule('maxHands', v)}
         />
         <Toggle label="Double after split" checked={rules.doubleAfterSplit} onChange={(v) => setRule('doubleAfterSplit', v)} />
-        <Toggle label="Late surrender" hint="Needs dealer peek" checked={rules.lateSurrender} onChange={(v) => setRule('lateSurrender', v)} />
+        <Toggle label="Late surrender" hint="Rare — most casinos don't offer it. Needs dealer peek." checked={rules.lateSurrender} onChange={(v) => setRule('lateSurrender', v)} />
         <Toggle label="Dealer peeks for blackjack" hint="Off = European no-hole-card" checked={rules.dealerPeek} onChange={(v) => setRule('dealerPeek', v)} />
         <Toggle label="Insurance offered" checked={rules.insurance} onChange={(v) => setRule('insurance', v)} />
         <Toggle label="Resplit aces" checked={rules.resplitAces} onChange={(v) => setRule('resplitAces', v)} />

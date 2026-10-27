@@ -50,8 +50,10 @@ const PUBLISHED_PAIRS: Record<number, string> = {
   11: 'P P P P P P P P P P',
 };
 
-describe('default rules chart matches the published chart', () => {
-  const chart = buildChart(DEFAULT_RULES);
+const WITH_LS = rules({ lateSurrender: true });
+
+describe('6D S17 DAS LS chart matches the published chart', () => {
+  const chart = buildChart(WITH_LS);
   for (const [name, published, table] of [
     ['hard', PUBLISHED_HARD, chart.hard],
     ['soft', PUBLISHED_SOFT, chart.soft],
@@ -70,11 +72,34 @@ describe('default rules chart matches the published chart', () => {
   });
 });
 
+describe('default rules (no surrender) — the common casino game', () => {
+  const chart = buildChart(DEFAULT_RULES);
+  it('surrender is off by default', () => {
+    expect(DEFAULT_RULES.lateSurrender).toBe(false);
+  });
+  it('15 and 16 hit against strong cards instead of surrendering', () => {
+    expect(chart.hard[15].join(' ')).toBe('S S S S S H H H H H');
+    expect(chart.hard[16].join(' ')).toBe('S S S S S H H H H H');
+  });
+  it('no cell anywhere asks for surrender', () => {
+    for (const t of [chart.hard, chart.soft, chart.pairs]) {
+      for (const row of Object.values(t)) expect(row.some((c) => c.startsWith('R'))).toBe(false);
+    }
+  });
+  it('everything else matches the published chart', () => {
+    for (const [row, str] of Object.entries(PUBLISHED_HARD)) {
+      if (row !== '15' && row !== '16') expect(chart.hard[Number(row)].join(' ')).toBe(str);
+    }
+    for (const [row, str] of Object.entries(PUBLISHED_SOFT)) expect(chart.soft[Number(row)].join(' ')).toBe(str);
+    for (const [row, str] of Object.entries(PUBLISHED_PAIRS)) expect(chart.pairs[Number(row)].join(' ')).toBe(str);
+  });
+});
+
 describe('changing rules changes the chart', () => {
   const cell = (r: Rules, kind: 'hard' | 'soft' | 'pair', row: number, up: Upcard) => codeFor(buildChart(r), { kind, row, up });
 
   it('H17: double 11 vs A, double soft 18 vs 2 and soft 19 vs 6, surrender 15/17/8-8 vs A', () => {
-    const h17 = rules({ dealerHitsSoft17: true });
+    const h17 = rules({ dealerHitsSoft17: true, lateSurrender: true });
     expect(cell(h17, 'hard', 11, 11)).toBe('D');
     expect(cell(h17, 'soft', 18, 2)).toBe('Ds');
     expect(cell(h17, 'soft', 19, 6)).toBe('Ds');
@@ -150,7 +175,8 @@ describe('charts agree with the EV calculator', () => {
   const best = (ev: ActionEVs) => Math.max(...[ev.hit, ev.stand, ev.double, ev.split, ev.surrender].filter((x): x is number => x !== null));
 
   const variants: [string, Rules][] = [
-    ['6D S17 DAS LS (default)', DEFAULT_RULES],
+    ['6D S17 DAS, no surrender (default)', DEFAULT_RULES],
+    ['6D S17 DAS LS', WITH_LS],
     ['8D S17', rules({ decks: 8 })],
     ['6D H17', rules({ dealerHitsSoft17: true })],
     ['6D no DAS', rules({ doubleAfterSplit: false })],
@@ -166,7 +192,7 @@ describe('charts agree with the EV calculator', () => {
   for (const [label, r] of variants) {
     it(`${label}: every cell within 0.75% of the calculator's best play`, () => {
       const chart = buildChart(r);
-      const isDefault = r === DEFAULT_RULES;
+      const isDefault = r === DEFAULT_RULES || r === WITH_LS;
       const tolerance = isDefault ? 0.0005 : 0.0075;
       const rows: [('hard' | 'soft' | 'pair'), Record<number, string[]>, number[]][] = [
         ['hard', chart.hard, [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]],
@@ -202,9 +228,10 @@ describe('recommend() respects what is legal right now', () => {
     expect(recommend(DEFAULT_RULES, cards('A', 2, 5), c(4), noDouble).action).toBe('stand');
   });
 
-  it('16 vs 10: surrender first, hit later', () => {
-    expect(recommend(DEFAULT_RULES, cards(10, 6), c('K'), all).action).toBe('surrender');
-    expect(recommend(DEFAULT_RULES, cards(10, 2, 4), c('K'), noDouble).action).toBe('hit');
+  it('16 vs 10: surrender first where offered, hit later; hit with no surrender', () => {
+    expect(recommend(WITH_LS, cards(10, 6), c('K'), all).action).toBe('surrender');
+    expect(recommend(WITH_LS, cards(10, 2, 4), c('K'), noDouble).action).toBe('hit');
+    expect(recommend(DEFAULT_RULES, cards(10, 6), c('K'), { ...all, surrender: false }).action).toBe('hit');
   });
 
   it('8,8 vs 6 at the hand limit plays as hard 16', () => {
@@ -233,8 +260,8 @@ describe('classification keys and reasons', () => {
     expect(classify(cards('A', 'A'), c(5), true).key).toBe('P11v5');
   });
 
-  it('has a reason for every default-chart cell', () => {
-    const chart = buildChart(DEFAULT_RULES);
+  it('has a reason for every chart cell', () => {
+    const chart = buildChart(WITH_LS);
     for (const [kind, table] of [['hard', chart.hard], ['soft', chart.soft], ['pair', chart.pairs]] as const) {
       for (const [row, codes] of Object.entries(table)) {
         codes.forEach((code, i) => {

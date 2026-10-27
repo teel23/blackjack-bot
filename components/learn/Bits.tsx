@@ -98,8 +98,11 @@ export function ActionPad({
   onPick,
   marks,
   disabled,
+  surrender = true,
 }: {
   legal: Legal;
+  /** Show the Surrender button at all (hidden when the rules don't offer it). */
+  surrender?: boolean;
   onPick: (a: Action) => void;
   /** After answering: mark the chosen/correct buttons. */
   marks?: { chosen?: Action | null; correct?: Action };
@@ -125,7 +128,9 @@ export function ActionPad({
   };
   return (
     <div className="flex flex-col gap-2">
-      <div className="grid grid-cols-3 gap-2">{(['double', 'split', 'surrender'] as Action[]).map((a) => btn(a, true))}</div>
+      <div className={`grid gap-2 ${surrender ? 'grid-cols-3' : 'grid-cols-2'}`}>
+        {((surrender ? ['double', 'split', 'surrender'] : ['double', 'split']) as Action[]).map((a) => btn(a, true))}
+      </div>
       <div className="grid grid-cols-2 gap-2">{(['hit', 'stand'] as Action[]).map((a) => btn(a))}</div>
     </div>
   );

@@ -184,7 +184,7 @@ export default function ChartPage() {
           <p className="mt-2 text-xs text-muted">Numbers are your accuracy %. A dot means you haven&apos;t played that spot yet.</p>
         </div>
       ) : (
-        <Legend />
+        <Legend surrender={Object.values(chart.hard).some((row) => row.some((c) => c.startsWith('R'))) || Object.values(chart.pairs).some((row) => row.some((c) => c.startsWith('R')))} />
       )}
 
       <BottomSheet open={!!open} onClose={() => setOpen(null)} title={open ? titleFor(tab, open.row, open.up) : ''}>
@@ -194,13 +194,13 @@ export default function ChartPage() {
   );
 }
 
-function Legend() {
+function Legend({ surrender }: { surrender: boolean }) {
   const items: [Code, string][] = [
     ['H', 'Hit'],
     ['S', 'Stand'],
     ['D', 'Double'],
     ['P', 'Split'],
-    ['Rh', 'Surrender'],
+    ...(surrender ? ([['Rh', 'Surrender']] as [Code, string][]) : []),
   ];
   return (
     <div className="mt-4 rounded-2xl bg-surface p-3 text-sm">
@@ -216,7 +216,13 @@ function Legend() {
       </ul>
       <p className="mt-3 text-xs leading-5 text-muted">
         <strong className="text-ink">Ds</strong> double if allowed, otherwise stand. <strong className="text-ink">D</strong> double if allowed,
-        otherwise hit. <strong className="text-ink">Rh / Rs / Rp</strong> surrender if allowed, otherwise hit / stand / split. A small dot marks a
+        otherwise hit.{' '}
+        {surrender && (
+          <>
+            <strong className="text-ink">Rh / Rs / Rp</strong> surrender if allowed, otherwise hit / stand / split.{' '}
+          </>
+        )}
+        A small dot marks a
         cell changed by your table rules. Tap any cell for the why.
       </p>
     </div>

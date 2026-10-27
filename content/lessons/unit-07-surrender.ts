@@ -2,38 +2,6 @@ import type { Lesson } from './types';
 
 export const unit7: Lesson[] = [
   {
-    id: 'u7-surrender',
-    unit: 7,
-    title: 'Late surrender',
-    summary: 'Give up half on 16 vs 9–A and 15 vs 10.',
-    cards: [
-      {
-        title: 'Losing less is winning',
-        body:
-          'Some hands lose more than half the time no matter what you do. With **late surrender** you give up half your bet right away — after the dealer has checked for blackjack — and the hand is over.\n\n' +
-          'It only makes sense when your expected loss is worse than 50¢ on the dollar.',
-      },
-      {
-        title: 'The surrender list (6 decks, S17)',
-        body:
-          '**Hard 16 vs 9, 10 or ace.** **Hard 15 vs 10.** That\'s it.\n\n' +
-          'It\'s only allowed as your first decision on two cards — after a hit, a 16 vs 10 just hits. And 8,8 is split, not surrendered (at S17).',
-        visual: { dealer: ['K', 7], hole: true, player: [10, 6] },
-      },
-    ],
-    questions: [
-      { type: 'decision', player: [10, 6], up: 10 },
-      { type: 'decision', player: [9, 7], up: 9 },
-      { type: 'decision', player: [10, 6], up: 'A' },
-      { type: 'decision', player: [9, 6], up: 'K' },
-      { type: 'decision', player: [10, 5], up: 9 },
-      { type: 'decision', player: [9, 7], up: 8 },
-      { type: 'decision', player: [10, 7], up: 'A' },
-      { type: 'decision', player: [4, 2, 10], up: 10, explain: 'Three cards: surrender is gone, so 16 vs 10 hits.' },
-      { type: 'decision', player: [10, 4], up: 10 },
-    ],
-  },
-  {
     id: 'u7-insurance',
     unit: 7,
     title: 'Why insurance usually isn\'t',
@@ -63,26 +31,57 @@ export const unit7: Lesson[] = [
     ],
   },
   {
+    id: 'u7-surrender',
+    unit: 7,
+    title: 'Surrender (if your casino offers it)',
+    summary: 'Most tables don\'t — here\'s what to do at the ones that do.',
+    cards: [
+      {
+        title: 'A rule you may never see',
+        body:
+          'Most casinos **don\'t offer surrender**, and it\'s switched off in this app by default. Some bigger casinos do: you give up **half your bet** as your first decision (after the dealer checks for blackjack) and the hand ends.\n\n' +
+          'It only pays when a hand loses more than half the time no matter how you play it. If your table has it, turn on **Late surrender** in Settings and the chart and coach will include it.',
+      },
+      {
+        title: 'The short list (6 decks, S17)',
+        body:
+          'Where it\'s offered: surrender **hard 16 vs 9, 10 or ace**, and **hard 15 vs 10**. Nothing else.\n\n' +
+          'Without surrender — the usual case — those hands just **hit**. This lesson\'s hands assume a table that offers it.',
+        visual: { dealer: ['K', 7], hole: true, player: [10, 6] },
+      },
+    ],
+    questions: [
+      { type: 'decision', player: [10, 6], up: 10, rules: { lateSurrender: true } },
+      { type: 'decision', player: [9, 7], up: 9, rules: { lateSurrender: true } },
+      { type: 'decision', player: [10, 6], up: 'A', rules: { lateSurrender: true } },
+      { type: 'decision', player: [9, 6], up: 'K', rules: { lateSurrender: true } },
+      { type: 'decision', player: [10, 5], up: 9, rules: { lateSurrender: true } },
+      { type: 'decision', player: [10, 7], up: 'A', rules: { lateSurrender: true } },
+      { type: 'decision', player: [10, 6], up: 10, prompt: 'Same hand at a table with no surrender:' },
+      { type: 'choice', prompt: 'Most casinos…', options: ['Offer surrender on every hand', 'Don\'t offer surrender at all', 'Only offer it on blackjack'], answer: 1, explain: 'Surrender is uncommon. When it isn\'t offered, 16 vs 10 is a hit.' },
+    ],
+  },
+  {
     id: 'u7-review',
     unit: 7,
-    title: 'Surrender & insurance review',
+    title: 'Insurance & surrender review',
     summary: 'Mixed practice.',
     cards: [
       {
         title: 'Quick recap',
         body:
-          'Surrender **16 vs 9, 10, A** and **15 vs 10** on your first two cards. Split 8s (S17). Decline insurance and even money. Everything else: the strategy you already know.',
+          'Decline insurance and even money. At a normal table (no surrender), hit 16 vs 9, 10 or A and 15 vs 10; split 8s. Where surrender is offered, give up **16 vs 9–A** and **15 vs 10** instead.',
       },
     ],
     questions: [
+      { type: 'choice', prompt: 'You\'re dealt A,K and the dealer shows an ace. What\'s the best play?', options: ['Take even money', 'Keep the blackjack'], answer: 1, explain: 'Keeping it pays 3:2 when the dealer doesn\'t have blackjack — worth more on average.' },
       { type: 'decision', player: [9, 7], up: 'A' },
       { type: 'decision', player: [8, 8], up: 10 },
       { type: 'decision', player: [10, 5], up: 10 },
-      { type: 'decision', player: [10, 5], up: 'A' },
       { type: 'decision', player: [10, 6], up: 7 },
-      { type: 'choice', prompt: 'You\'re dealt A,K and the dealer shows an ace. What\'s the best play?', options: ['Take even money', 'Keep the blackjack'], answer: 1, explain: 'Keeping it pays 3:2 when the dealer doesn\'t have blackjack — worth more on average.' },
+      { type: 'decision', player: [9, 7], up: 'A', rules: { lateSurrender: true }, prompt: 'At a table that offers surrender:' },
+      { type: 'choice', prompt: 'You have 19 and the dealer shows an ace. Insurance?', options: ['Yes', 'No'], answer: 1, explain: 'Insurance is a side bet on the hole card, not protection for your hand. Skip it.' },
       { type: 'decision', player: [7, 3, 6], up: 9 },
-      { type: 'choice', prompt: 'When is late surrender allowed?', options: ['Any time', 'Only on your first two cards', 'Only after a split', 'Only against an ace'], answer: 1, explain: 'It has to be your first decision.' },
     ],
   },
 ];

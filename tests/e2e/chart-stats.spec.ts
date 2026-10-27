@@ -45,7 +45,7 @@ test('stats + review mistakes replays the exact missed hand', async ({ page }) =
   await page.getByRole('button', { name: /Review 1 hand/ }).click();
   await expect(page.getByText(/Review mistakes · 1 \/ 1/)).toBeVisible();
   await expect(page.getByRole('group', { name: /Your cards: Ten of hearts, Six of diamonds/ })).toBeVisible();
-  await page.getByRole('button', { name: 'Surrender', exact: true }).click();
+  await page.getByRole('button', { name: 'Hit', exact: true }).click();
   await expect(page.getByText('1 / 1')).toBeVisible();
   const save = await readSave(page);
   expect(save.stats.mistakes).toHaveLength(0);

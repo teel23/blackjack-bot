@@ -11,7 +11,7 @@ export const unit8: Lesson[] = [
         title: 'A small rule, a few new plays',
         body:
           'When the dealer **hits soft 17**, they bust a bit more often but also make more strong hands. It costs players about **0.2%**.\n\n' +
-          'Your strategy shifts in a handful of spots: **double 11 vs A**, **double A,7 vs 2** and **A,8 vs 6**, and surrender **15 vs A**, **17 vs A** and **8,8 vs A**.',
+          'Your strategy shifts in a handful of spots: **double 11 vs A**, **double A,7 vs 2** and **double A,8 vs 6**. (At the rare tables with surrender, a few more hands against an ace become surrenders.)',
       },
       {
         title: 'Check the felt',
@@ -23,9 +23,8 @@ export const unit8: Lesson[] = [
       { type: 'decision', player: [7, 4], up: 'A', rules: { dealerHitsSoft17: true } },
       { type: 'decision', player: ['A', 7], up: 2, rules: { dealerHitsSoft17: true } },
       { type: 'decision', player: ['A', 8], up: 6, rules: { dealerHitsSoft17: true } },
-      { type: 'decision', player: [10, 5], up: 'A', rules: { dealerHitsSoft17: true } },
-      { type: 'decision', player: [10, 7], up: 'A', rules: { dealerHitsSoft17: true } },
-      { type: 'decision', player: [8, 8], up: 'A', rules: { dealerHitsSoft17: true } },
+      { type: 'decision', player: [6, 5], up: 'A', prompt: 'Now at an S17 table:' },
+      { type: 'decision', player: ['A', 7], up: 2, prompt: 'Now at an S17 table:' },
       { type: 'choice', prompt: 'Which rule is better for the player?', options: ['Dealer stands on soft 17 (S17)', 'Dealer hits soft 17 (H17)'], answer: 0, explain: 'S17 is worth about 0.2% to the player.' },
     ],
   },

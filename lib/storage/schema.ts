@@ -3,7 +3,7 @@ import type { Action, Legal, Round } from '../engine/round';
 import { DEFAULT_RULES, type Rules, sanitizeRules } from '../engine/rules';
 import { type Shoe, createShoe } from '../engine/shoe';
 
-export const SAVE_VERSION = 1;
+export const SAVE_VERSION = 2;
 export const STARTING_BANKROLL = 1000;
 
 export type AnimSpeed = 'off' | 'fast' | 'normal';

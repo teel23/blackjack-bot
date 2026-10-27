@@ -4,6 +4,7 @@ import type { Card } from '../engine/cards';
 import type { Action, Legal } from '../engine/round';
 import { randomSeed, seedFromString } from '../engine/rng';
 import { grade } from '../learn';
+import { type Rules, surrenderAvailable } from '../engine/rules';
 import { localDate } from '../progress/dates';
 import { type DrillFilter, drillCandidates, handForKey, pickDrill } from '../progress/drillPicker';
 import { completeGoal } from '../progress/streak';
@@ -68,13 +69,18 @@ export function drillHand(a: ActiveDrill, i = a.index): { key: string; cards: Ca
   return hand ? { key, ...hand } : null;
 }
 
+/** Replayed hands keep the options you had — minus surrender if your table no longer offers it. */
+export function drillLegal(hand: { legal?: Legal }, rules: Rules): Legal | undefined {
+  return hand.legal ? { ...hand.legal, surrender: hand.legal.surrender && surrenderAvailable(rules) } : undefined;
+}
+
 export function drillAnswer(chosen: Action | 'timeout', ms: number) {
   update((d) => {
     const a = d.progress.activeDrill;
     if (!a || a.answers.length > a.index) return;
     const hand = drillHand(a);
     if (!hand) return;
-    const g = grade(hand.cards, hand.up, d.settings.rules, undefined, hand.legal);
+    const g = grade(hand.cards, hand.up, d.settings.rules, undefined, drillLegal(hand, d.settings.rules));
     const ok = chosen === g.rec.action;
     // Fixed it: drop that mistake from the review list.
     if (ok && a.kind === 'review') d.stats.mistakes = d.stats.mistakes.filter((m) => m.id !== hand.key);

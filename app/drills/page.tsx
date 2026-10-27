@@ -9,6 +9,7 @@ import { LIBRARY_SIZE, SPEED_SECONDS, startLibraryDrill, startReview } from '@/l
 import { accuracy } from '@/lib/state/stats';
 import { useApp } from '@/lib/state/store';
 import type { StatCategory } from '@/lib/storage/schema';
+import { surrenderAvailable } from '@/lib/engine/rules';
 
 const CAT: Record<DrillFilter, StatCategory | null> = { hard: 'hard', soft: 'soft', pair: 'pair', surrender: 'surrender', mixed: null };
 
@@ -40,7 +41,7 @@ export default function DrillsPage() {
       </div>
 
       <ul className="mt-4 flex flex-col gap-2">
-        {DRILL_FILTERS.map((f) => {
+        {DRILL_FILTERS.filter((f) => f.id !== 'surrender' || surrenderAvailable(data.settings.rules)).map((f) => {
           const cat = CAT[f.id];
           const st = cat ? data.stats.categories[cat] : null;
           const acc = st ? accuracy(st.n, st.correct) : null;

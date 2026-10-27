@@ -32,7 +32,7 @@ export const unit3: Lesson[] = [
       { type: 'decision', player: [9, 7], up: 2, actions: [...HS] },
       { type: 'decision', player: [10, 4], up: 'A', actions: [...HS] },
       { type: 'decision', player: [7, 6], up: 6, actions: [...HS] },
-      { type: 'decision', player: [9, 6], up: 'K', actions: [...HS], explain: 'Without surrender, 15 against a 10 is a hit. (Unit 7 adds surrender.)' },
+      { type: 'decision', player: [9, 6], up: 'K', actions: [...HS], explain: '15 against a 10 is a hit — a 10 up is too strong to stand against.' },
     ],
   },
   {

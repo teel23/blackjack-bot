@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { upcardLabel, upcardOf } from '@/lib/engine/cards';
 import { describeHand, handValue } from '@/lib/engine/hand';
 import { type Action, type Round, canAffordInsurance, insuranceCost, legalActions } from '@/lib/engine/round';
-import { rulesSummary } from '@/lib/engine/rules';
+import { rulesSummary, surrenderAvailable } from '@/lib/engine/rules';
 import { play as sfx } from '@/lib/audio';
 import { useAnimMs, useViewport } from '@/lib/hooks';
 import { money } from '@/lib/progress/dates';
@@ -136,6 +136,9 @@ export default function Table() {
   };
 
   const legal = round ? legalActions(round) : null;
+  // No surrender at this table → no Surrender button at all (layout is fixed per rule set, not per hand).
+  const showSurrender = surrenderAvailable(round ? round.rules : settings.rules);
+  const rowActions: Action[] = showSurrender ? ['double', 'split', 'surrender'] : ['double', 'split'];
   const rec = useMemo(() => currentRecommendation(data), [data]);
   const available = chipsAvailable(data);
   const inProgress = roundInProgress(data);
@@ -256,15 +259,15 @@ export default function Table() {
           {round && round.phase === 'insurance' ? (
             <InsuranceBar round={round} compact={compact} />
           ) : round && round.phase === 'player' && legal && compact ? (
-            <div className="grid grid-cols-5 gap-2">
-              {(['hit', 'stand', 'double', 'split', 'surrender'] as Action[]).map((a) => (
+            <div className={`grid gap-2 ${showSurrender ? 'grid-cols-5' : 'grid-cols-4'}`}>
+              {(['hit', 'stand', ...rowActions] as Action[]).map((a) => (
                 <ActionButton key={a} action={a} enabled={legal[a]} hinted={hintFor === a} small />
               ))}
             </div>
           ) : round && round.phase === 'player' && legal ? (
             <>
-              <div className="grid grid-cols-3 gap-2">
-                {(['double', 'split', 'surrender'] as Action[]).map((a) => (
+              <div className={`grid gap-2 ${showSurrender ? 'grid-cols-3' : 'grid-cols-2'}`}>
+                {rowActions.map((a) => (
                   <ActionButton key={a} action={a} enabled={legal[a]} hinted={hintFor === a} small />
                 ))}
               </div>

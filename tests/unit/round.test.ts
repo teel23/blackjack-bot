@@ -147,9 +147,15 @@ describe('blackjacks, peek and insurance', () => {
   });
 });
 
-describe('surrender', () => {
+describe('surrender (where offered)', () => {
+  const ls = rules({ lateSurrender: true });
+
+  it('is off by default', () => {
+    expect(legalActions(deal([10, 6], 10, 7)).surrender).toBe(false);
+  });
+
   it('gives back half the bet', () => {
-    const r = deal([10, 6], 10, 7);
+    const r = deal([10, 6], 10, 7, [], { rules: ls });
     expect(legalActions(r).surrender).toBe(true);
     const done = act(r, 'surrender');
     expect(done.hands[0].outcome).toBe('surrender');
@@ -157,17 +163,17 @@ describe('surrender', () => {
   });
 
   it('is only allowed as the first decision', () => {
-    const r = act(deal([10, 4], 10, 7, [2]), 'hit');
+    const r = act(deal([10, 4], 10, 7, [2], { rules: ls }), 'hit');
     expect(legalActions(r).surrender).toBe(false);
   });
 
   it('is unavailable without the rule or without a peek', () => {
     expect(legalActions(deal([10, 6], 10, 7, [], { rules: rules({ lateSurrender: false }) })).surrender).toBe(false);
-    expect(legalActions(deal([10, 6], 10, 7, [], { rules: rules({ dealerPeek: false }) })).surrender).toBe(false);
+    expect(legalActions(deal([10, 6], 10, 7, [], { rules: rules({ lateSurrender: true, dealerPeek: false }) })).surrender).toBe(false);
   });
 
   it('is not allowed after a split', () => {
-    const r = act(deal([8, 8], 10, 7, [2, 3]), 'split');
+    const r = act(deal([8, 8], 10, 7, [2, 3], { rules: ls }), 'split');
     expect(legalActions(r).surrender).toBe(false);
   });
 });

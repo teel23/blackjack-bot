@@ -12,10 +12,14 @@ export interface LoadResult {
 
 /**
  * Upgrade older save shapes step by step. Each step takes the previous version's object.
- * v1 is the first shipped shape, so there is nothing to upgrade yet.
  */
 const MIGRATIONS: Record<number, (old: Record<string, unknown>) => Record<string, unknown>> = {
-  // 1: (v1) => ({ ...v1, version: 2, newField: … }),
+  // v2: surrender became opt-in (most casinos don't offer it) — switch it off for existing players.
+  1: (v1) => {
+    const settings = (v1.settings ?? {}) as Record<string, unknown>;
+    const rules = (settings.rules ?? {}) as Record<string, unknown>;
+    return { ...v1, version: 2, settings: { ...settings, rules: { ...rules, lateSurrender: false } } };
+  },
 };
 
 export function migrate(raw: unknown): { data: SaveData; notice: string | null } {

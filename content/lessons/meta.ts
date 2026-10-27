@@ -116,21 +116,21 @@ export const LESSON_META: LessonMeta[] = [
     "summary": "2s, 3s, 6s, 7s and 9s."
   },
   {
-    "id": "u7-surrender",
-    "unit": 7,
-    "title": "Late surrender",
-    "summary": "Give up half on 16 vs 9–A and 15 vs 10."
-  },
-  {
     "id": "u7-insurance",
     "unit": 7,
     "title": "Why insurance usually isn't",
     "summary": "The math behind the side bet — and even money."
   },
   {
+    "id": "u7-surrender",
+    "unit": 7,
+    "title": "Surrender (if your casino offers it)",
+    "summary": "Most tables don't — here's what to do at the ones that do."
+  },
+  {
     "id": "u7-review",
     "unit": 7,
-    "title": "Surrender & insurance review",
+    "title": "Insurance & surrender review",
     "summary": "Mixed practice."
   },
   {

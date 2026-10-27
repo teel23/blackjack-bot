@@ -7,7 +7,8 @@ import { LESSONS, UNIT_TITLES, getLesson } from '@/content/lessons';
 import type { ChoiceQuestion, DecisionQuestion } from '@/content/lessons/types';
 import { play as sfx } from '@/lib/audio';
 import type { Action } from '@/lib/engine/round';
-import { gradeLessonQuestion } from '@/lib/learn';
+import { gradeLessonQuestion, lessonRules } from '@/lib/learn';
+import { surrenderAvailable } from '@/lib/engine/rules';
 import { localDate } from '@/lib/progress/dates';
 import { lessonPath } from '@/lib/progress/unlock';
 import { type LessonResult, abandonLesson, finishLesson, lessonAnswer, lessonNext, openLesson } from '@/lib/state/learn';
@@ -173,7 +174,7 @@ function DecisionStep({ q, answered, ok, onContinue }: { q: DecisionQuestion; an
             Continue
           </button>
         ) : (
-          <ActionPad legal={g.legal} onPick={pick} />
+          <ActionPad legal={g.legal} onPick={pick} surrender={surrenderAvailable(lessonRules(q))} />
         )}
         {answered && chosen === null && <span className="sr-only">Already answered</span>}
       </BottomBar>

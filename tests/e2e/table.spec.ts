@@ -20,19 +20,31 @@ test.describe('practice table', () => {
     await expectNoHorizontalOverflow(page);
   });
 
-  test('wrong play gets corrected and can be taken back', async ({ page }) => {
-    await withSave(page, stackedSave([10, 6], 'K', 7, [9, 4]));
+  test('wrong play gets corrected and can be taken back; no Surrender button by default', async ({ page }) => {
+    await withSave(page, stackedSave([10, 6], 'K', 7, [4]));
     await page.goto('/play/');
     await page.getByRole('button', { name: /^Deal/ }).click();
-    await page.getByRole('button', { name: 'Hit', exact: true }).click();
-    await expect(page.getByText('16 vs 10 → Surrender')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Surrender', exact: true })).toHaveCount(0);
+    await page.getByRole('button', { name: 'Stand', exact: true }).click();
+    await expect(page.getByText('16 vs 10 → Hit')).toBeVisible();
+    expect((await readSave(page)).table.quickStack).toBe(975);
     await page.getByRole('button', { name: /Take back/ }).click();
-    await expect(page.getByRole('button', { name: 'Surrender', exact: true })).toBeEnabled();
+    await page.getByRole('button', { name: 'Hit', exact: true }).click();
+    await expect(page.getByText('Hit — correct')).toBeVisible();
+    await page.getByRole('button', { name: 'Stand', exact: true }).click();
+    await expect(page.getByText(/You win \$25/)).toBeVisible();
+    const save = await readSave(page);
+    expect(save.table.quickStack).toBe(1025);
+    expect(save.stats.mistakes).toHaveLength(1);
+  });
+
+  test('surrender appears when the table offers it', async ({ page }) => {
+    await withSave(page, stackedSave([10, 6], 'K', 7, [4], (d) => (d.settings.rules.lateSurrender = true)));
+    await page.goto('/play/');
+    await page.getByRole('button', { name: /^Deal/ }).click();
     await page.getByRole('button', { name: 'Surrender', exact: true }).click();
     await expect(page.getByText('Surrender — correct')).toBeVisible();
-    const save = await readSave(page);
-    expect(save.table.quickStack).toBe(1000 - 12.5);
-    expect(save.stats.mistakes).toHaveLength(1);
+    expect((await readSave(page)).table.quickStack).toBe(1000 - 12.5);
   });
 
   test('split 8s, double the first hand, both hands win', async ({ page }) => {

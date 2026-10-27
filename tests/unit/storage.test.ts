@@ -38,6 +38,16 @@ describe('saved data', () => {
     expect(() => migrate({ foo: 1 })).toThrow();
   });
 
+  it('v1 saves migrate to v2 with surrender switched off', () => {
+    const v1 = { ...defaultData(1), version: 1 } as unknown as Record<string, unknown>;
+    (v1.settings as { rules: Record<string, unknown> }).rules.lateSurrender = true;
+    (v1.bankroll as { balance: number }).balance = 777;
+    const { data } = migrate(v1);
+    expect(data.version).toBe(2);
+    expect(data.settings.rules.lateSurrender).toBe(false);
+    expect(data.bankroll.balance).toBe(777);
+  });
+
   it('tolerates a save from a newer version', () => {
     const { data } = migrate({ ...defaultData(1), version: SAVE_VERSION + 3 });
     expect(data.version).toBe(SAVE_VERSION);

@@ -29,7 +29,8 @@ export const DEFAULT_RULES: Rules = {
   maxHands: 4,
   resplitAces: false,
   hitSplitAces: false,
-  lateSurrender: true,
+  // Off by default: most casinos don't offer it. Available in Settings for tables that do.
+  lateSurrender: false,
   insurance: true,
   dealerPeek: true,
 };
