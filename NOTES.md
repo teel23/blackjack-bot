@@ -107,6 +107,17 @@ Run once in **Safari**, then again after **Add to Home Screen** (installed app).
 
 ## Build log (newest first)
 
+### 2026-10-27 — Next.js 16.4.0 → 16.4.3 (security patch)
+- `npm audit` listed three Next.js 16.0–16.4.0 advisories: RCE in the image optimizer with SVGs, DoS via
+  Server Actions, RCE in `use cache`. None reach this app: it's a static export (`images.unoptimized`,
+  no Server Actions, no `use cache`), served as files by Netlify and the home server. Bumped anyway
+  (patch release): `next` and `eslint-config-next` pinned to 16.4.3.
+- Lint now ignores `.netlify/**` (the Netlify CLI's cached build was producing 11 false errors).
+- Tests: unit 212/212; static e2e 83 passed, 4 skipped; home e2e 18/18. `home:deploy` run (build
+  75a6d42ab705). Netlify not redeployed: it's static, so it isn't affected.
+- Still open: Vitest 3 / tinypool advisories are dev-only (they run only during tests on the Mac); the fix
+  is Vitest 5, a major upgrade.
+
 ### 2026-10-27 — Mac sync: run from my Mac, progress saved on my Mac
 - Approved change to the "no backend / no sync" rule, for one thing only: a small HTTPS server on my own
   Mac (plus mkcert). No third-party services. Netlify unchanged; `npm run deploy` not run.
@@ -247,7 +258,7 @@ sit on known marginal cells, where the published chart is kept.
 
 ## Open Items
 - [ ] **Mac sync iPhone checklist** (above) — trust the CA, install from the Mac URL, test offline, then move progress over
-- [ ] Next.js printed a security advisory for 16.4.0 during the build — decide whether to upgrade (not done here)
+- [ ] Optional: Vitest 3 → 5 to clear the dev-only Vitest/tinypool audit findings (major upgrade)
 - [ ] **Add DNS:** Namecheap → c2tbuilds.com → Advanced DNS → CNAME `blackjack` → `c2t-blackjack-bot.netlify.app.` (then Netlify issues SSL automatically)
 - [ ] Run the manual iPhone checklist (above) in Safari and as an installed app
 - [ ] Optional: switch portfolio `demoUrl` to https://blackjack.c2tbuilds.com once SSL is live
