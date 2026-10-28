@@ -42,6 +42,18 @@ function hostName() {
   return `${sh('scutil', ['--get', 'LocalHostName'])}.local`;
 }
 
+/** This Mac's private IPv4 addresses (Wi-Fi/Ethernet). The phone can use one when `.local` doesn't resolve. */
+function lanAddresses() {
+  const priv = /^(10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.)/;
+  return Object.values(os.networkInterfaces())
+    .flat()
+    .filter((a) => a && a.family === 'IPv4' && !a.internal && priv.test(a.address))
+    .map((a) => a.address)
+    .sort();
+}
+
+const certNames = () => [hostName(), ...lanAddresses(), 'localhost', '127.0.0.1', '::1'];
+
 function agentLoaded() {
   return spawnSync('launchctl', ['print', `${DOMAIN}/${LABEL}`], { stdio: 'ignore' }).status === 0;
 }
@@ -80,7 +92,7 @@ function caRoot(mk) {
 
 function certNeedsRenewal(names) {
   if (!fs.existsSync(CERT) || !fs.existsSync(KEY) || !fs.existsSync(NAMES)) return 'no cert yet';
-  if (fs.readFileSync(NAMES, 'utf8').trim() !== names.join(' ')) return 'hostname changed';
+  if (fs.readFileSync(NAMES, 'utf8').trim() !== names.join(' ')) return 'hostname or Wi-Fi address changed';
   const cert = new crypto.X509Certificate(fs.readFileSync(CERT));
   if (new Date(cert.validTo).getTime() - Date.now() < 30 * 86_400_000) return 'expires within 30 days';
   return null;
@@ -208,7 +220,7 @@ async function setup() {
   const mk = await ensureMkcert();
   console.log(`  mkcert: ${mk}`);
   const host = hostName();
-  const certChanged = makeCert(mk, [host, 'localhost', '127.0.0.1', '::1']);
+  const certChanged = makeCert(mk, certNames());
   const root = caRoot(mk);
   deploy();
   installAgent();
@@ -221,9 +233,10 @@ async function setup() {
     return;
   }
   const url = `https://${host}:${PORT}`;
+  const ipUrls = lanAddresses().map((a) => `https://${a}:${PORT}`);
   console.log(`
 ✓ Blackjack Bot is running from this Mac
-  ${url}
+  ${url}${ipUrls.length ? `\n  ${ipUrls.join('\n  ')}   ← use this if the phone says "can't find the server"` : ''}
 
 iPhone (once):
   1. AirDrop rootCA.pem (Finder is opening its folder now) to the iPhone.
@@ -261,7 +274,10 @@ async function status() {
   console.log(`Blackjack Bot home server
   agent:   ${state}
   answers: ${p?.ok ? `yes (server time ${new Date(p.serverTime).toLocaleString()})` : 'no'}
-  URL:     ${url}`);
+  URL:     ${url}${lanAddresses().map((a) => `\n           https://${a}:${PORT}`).join('')}`);
+  if (fs.existsSync(NAMES) && fs.readFileSync(NAMES, 'utf8').trim() !== certNames().join(' ')) {
+    console.log('  ⚠ The Mac\'s name or Wi-Fi address changed since the cert was made: run npm run home:setup');
+  }
 
   const save = path.join(DATA, 'save.json');
   if (fs.existsSync(save)) {

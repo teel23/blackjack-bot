@@ -30,7 +30,7 @@ before assumptions about anything outside this repo.
 - Hosting: **Netlify** (site `c2t-blackjack-bot`, id `f7f62ddb-caff-4442-b929-b742555c1035`, account
   `teel23`), domain `blackjack.c2tbuilds.com` (Namecheap CNAME → `c2t-blackjack-bot.netlify.app`).
   Deploy with `npm run deploy` (CLI, not git-linked — pushing to GitHub does NOT deploy).
-- **Mac sync (home server):** `https://Carsons-MacBook-Air.local:8443`, LaunchAgent
+- **Mac sync (home server):** `https://Carsons-MacBook-Air.local:8443` (or `https://192.168.0.83:8443`; the cert covers the Wi-Fi IPv4 too), LaunchAgent
   `com.c2tbuilds.blackjack`, data in `~/blackjack-bot-data/` (save.json, history/, conflicts/, site/,
   certs/, logs/) — outside the repo and outside iCloud (iCloud evicts files → "Resource deadlock
   avoided"); iCloud `Projects/BlackJack Bot/data/save.json` is only a best-effort mirror. The client

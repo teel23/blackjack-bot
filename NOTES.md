@@ -8,6 +8,7 @@
 ## Live URL
 🌐 **https://blackjack.c2tbuilds.com** (once the DNS record is added) · works now at **https://c2t-blackjack-bot.netlify.app**
 🏠 **https://Carsons-MacBook-Air.local:8443** — served from my Mac on home Wi-Fi, progress synced to the Mac
+(iPhone says "can't find the server"? Use **https://192.168.0.83:8443**, the Mac's Wi-Fi address)
 
 ## GitHub
 📁 **https://github.com/teel23/blackjack-bot**
@@ -33,6 +34,7 @@ time when it can't. Netlify is unchanged (no sync there — the Mac sync card is
 | What | Where |
 |---|---|
 | URL | `https://Carsons-MacBook-Air.local:8443` (from `scutil --get LocalHostName`) |
+| URL by address | `https://192.168.0.83:8443`: the Mac's Wi-Fi IPv4, also in the cert. For when the phone can't resolve `.local`. If the address changes, `home:status` warns: rerun `home:setup`. A DHCP reservation in the router keeps it fixed |
 | Save | `~/blackjack-bot-data/save.json` (+ `history/` hourly, newest 200 · `conflicts/` never auto-deleted) |
 | Deployed site | `~/blackjack-bot-data/site` → symlink to the current build in `site-builds/` |
 | Cert | `~/blackjack-bot-data/certs/` (mkcert) · CA for the iPhone: `$(mkcert -CAROOT)/rootCA.pem` |
@@ -74,7 +76,8 @@ The Netlify app and the Mac app are different websites, so their storage doesn't
    install the profile. Then go to Settings → General → About → Certificate Trust Settings and turn on
    full trust for it. If iOS doesn't recognize the file, rename it to `.crt`.
 2. [ ] On home Wi-Fi, open `https://Carsons-MacBook-Air.local:8443` in Safari. It should load with no
-   warning. Add it to the Home Screen.
+   warning. Add it to the Home Screen. If Safari says it can't find the server, use
+   `https://192.168.0.83:8443` instead. Stick with one URL: each one keeps its own copy of progress on the phone.
 3. [ ] Open the Home Screen app and play a hand. Settings → Mac sync should say "Copied to Mac".
 4. [ ] Turn on Airplane Mode. Every tab still works, and so does playing a hand. Turn Airplane Mode off
    and tap Sync now. It catches up.
@@ -106,6 +109,14 @@ Run once in **Safari**, then again after **Add to Home Screen** (installed app).
 - [ ] After a later deploy: reopen → "A new version is ready" appears (never mid-hand) → Update reloads.
 
 ## Build log (newest first)
+
+### 2026-10-28 — iPhone: "can't find the server" → URL by IP address
+- The iPhone couldn't resolve `Carsons-MacBook-Air.local`, but the Mac, the server and the Wi-Fi were fine:
+  the phone (192.168.0.81) is on the same network and pings back.
+- `home:setup` now also puts the Mac's private Wi-Fi IPv4 addresses in the cert, so
+  `https://192.168.0.83:8443` works with no name lookup. Setup and status print that URL, and status warns
+  when the name or address no longer matches the cert. Cert reissued; both URLs verified with curl against
+  the mkcert CA. The phone's CA trust is unchanged (same CA, new server cert).
 
 ### 2026-10-27 — Next.js 16.4.0 → 16.4.3 (security patch)
 - `npm audit` listed three Next.js 16.0–16.4.0 advisories: RCE in the image optimizer with SVGs, DoS via

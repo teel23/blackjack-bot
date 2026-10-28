@@ -21,7 +21,7 @@ The same build can be served from a Mac on the home network, with progress synce
 (no third-party services). See `NOTES.md` → "Run from my Mac".
 
 ```bash
-npm run home:setup    # one time: mkcert cert, LaunchAgent, deploy → https://<LocalHostName>.local:8443
+npm run home:setup    # one time: mkcert cert, LaunchAgent, deploy → https://<LocalHostName>.local:8443 (also https://<Wi-Fi IP>:8443)
 npm run home:deploy   # after changes
 npm run home:status
 npm run e2e:home      # sync e2e against the real home server
